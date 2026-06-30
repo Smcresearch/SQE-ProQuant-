@@ -485,6 +485,16 @@ function openHeatModal(monthStr) {
     if (blankW > 0.0001) {
       const implied = (monthRet - known) / (blankW / 100);
       holds.forEach(h => { if (h.r == null && h.w != null) { h.r = +implied.toFixed(2); h.est = true; } });
+    } else {
+      // Every holding has a measured return (e.g. the fully-rotated ML basket).
+      // The per-holding detail and the monthly summary are built differently and
+      // can diverge by a point or two, so shift each return by the same residual
+      // (per weight) to keep the Contrib column summing to the month return.
+      const totW = holds.reduce((a, h) => a + (h.w || 0), 0);
+      const adj = totW > 0.0001 ? (monthRet - known) / (totW / 100) : 0;
+      if (Math.abs(adj) > 0.005) holds.forEach(h => {
+        if (h.r != null && h.w != null) { h.r = +(h.r + adj).toFixed(2); h.est = true; }
+      });
     }
   }
 
