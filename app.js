@@ -350,16 +350,23 @@ function renderHeatmap(d, layer) {
   const md = d.monthly_detail;
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  // Build year/month grid from monthly_detail
+  // The LAST monthly row is the LIVE / upcoming month: its basket is formed but the
+  // month has not been traded yet, so it has no realized return (only a tiny entry
+  // cost). Mark it as live rather than rendering it as a finished cell.
+  const liveM = md.length ? String(md[md.length - 1].Month).slice(0, 7) : null;
+
+  // Build year/month grid from monthly_detail (excluding the live month)
   const grid = {};
   md.forEach(row => {
     const m = String(row.Month).slice(0, 7);
-    if (!m || m.length < 7) return;
+    if (!m || m.length < 7 || m === liveM) return;
     const yr = m.slice(0, 4), mo = parseInt(m.slice(5, 7)) - 1;
     if (!grid[yr]) grid[yr] = new Array(12).fill(null);
     const val = row[layer];
     if (val != null) grid[yr][mo] = +(val * 100).toFixed(2);
   });
+  // Ensure the live month's year row exists so its cell can render.
+  if (liveM && !grid[liveM.slice(0, 4)]) grid[liveM.slice(0, 4)] = new Array(12).fill(null);
 
   const years = Object.keys(grid).sort((a, b) => +b - +a);
 
@@ -370,12 +377,15 @@ function renderHeatmap(d, layer) {
   years.forEach(yr => {
     html += `<div class="hm-year">${yr}</div>`;
     grid[yr].forEach((val, mi) => {
-      if (val === null) {
-        html += `<div class="hm-cell empty" title="${yr}-${String(mi+1).padStart(2,'0')}: no data (before strategy inception)">–</div>`;
+      const monthStr = `${yr}-${String(mi+1).padStart(2,'0')}`;
+      if (monthStr === liveM) {
+        html += `<div class="hm-cell" style="background:rgba(56,189,248,0.16);color:#38bdf8;font-weight:700"
+          onclick="openHeatModal('${monthStr}')" title="${monthStr}: LIVE basket — this month is not traded yet (no realized return)">●</div>`;
+      } else if (val === null) {
+        html += `<div class="hm-cell empty" title="${monthStr}: no data (before strategy inception)">–</div>`;
       } else {
         const bg = heatColor(val);
         const fg = Math.abs(val) > 4 ? '#fff' : 'rgba(255,255,255,0.5)';
-        const monthStr = `${yr}-${String(mi+1).padStart(2,'0')}`;
         html += `<div class="hm-cell" style="background:${bg};color:${fg}"
           onclick="openHeatModal('${monthStr}')" title="${monthStr}: ${val}%">
           ${val > 0 ? '+' : ''}${val}
@@ -412,8 +422,12 @@ function openHeatModal(monthStr) {
   const row = d.monthly_detail.find(r => String(r.Month).slice(0,7) === monthStr);
   if (!row) return;
 
-  document.getElementById('modal-month').textContent = monthStr;
-  const benchVal = row.Bench != null ? +(row.Bench * 100).toFixed(2) : null;
+  // The last monthly row is the LIVE/upcoming month — basket formed, not traded yet.
+  const liveMonth = d.monthly_detail.length ? String(d.monthly_detail[d.monthly_detail.length - 1].Month).slice(0, 7) : '';
+  const isLive = monthStr === liveMonth;
+
+  document.getElementById('modal-month').textContent = monthStr + (isLive ? '  ·  LIVE (not yet traded)' : '');
+  const benchVal = (isLive || row.Bench == null) ? null : +(row.Bench * 100).toFixed(2);
 
   // Benchmark return for the same month from BOTH indices, regardless of universe
   const benchOf = (u) => {
@@ -438,8 +452,7 @@ function openHeatModal(monthStr) {
   let portoLabel = 'SQE Portfolio';
   if (!holds.length) {
     const cp = (d.current_portfolio || []).filter(s => s.clean_symbol && s.clean_symbol !== 'Stock');
-    const liveMonth = String((cp.find(s => s.date) || {}).date || DASHBOARD_DATA.last_update || '').slice(0, 7);
-    if (cp.length && monthStr === liveMonth) {
+    if (cp.length && isLive) {
       holds = cp.map(s => ({
         s: s.clean_symbol,
         sec: s.sector,
@@ -474,7 +487,7 @@ function openHeatModal(monthStr) {
   // known exactly (= month return - sum of the measured contributions). Spread
   // that residual across them by weight so the Contrib column sums to the
   // month's portfolio return. These filled values are marked estimated (~).
-  const monthRet = row.Base != null ? +(row.Base * 100).toFixed(2) : null;
+  const monthRet = (isLive || row.Base == null) ? null : +(row.Base * 100).toFixed(2);
   if (monthRet != null) {
     let known = 0, blankW = 0;
     holds.forEach(h => {
