@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQE ProQuant Terminal</title>
+  <meta name="description" content="Institutional-grade portfolio analytics for the SQE ProQuant (Nifty 500) Model.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="particles-js"></div>
+
+  <!-- HEATMAP CELL POPUP MODAL -->
+  <div id="hmModal" class="modal-overlay" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span class="modal-month" id="modal-month"></span>
+          <span class="modal-sub">Monthly Performance vs Benchmark</span>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <main class="app-container">
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="header-left">
+        <div class="brand-badge">SQE</div>
+        <div>
+          <h1 class="brand-title">SQE ProQuant <span style="font-size:0.7rem; vertical-align:middle; opacity:0.6">Nifty 500</span> <span style="font-size:0.6rem; vertical-align:middle; opacity:0.5">v1.1.2</span></h1>
+          <p id="last-refresh" class="brand-sub mono"></p>
+          <p id="backtest-period" class="brand-sub mono" style="opacity:.65;font-size:.7rem;margin-top:.1rem"></p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div id="regime-badge" class="regime-badge"></div>
+        <div class="nav-right">
+          <button class="export-btn" onclick="exportReport()">
+            <span>📥</span> Export Report
+          </button>
+          <div class="universe-tabs">
+            <button class="uni-btn active" id="btn-n500" onclick="switchUniverse('nifty500')">Nifty 500</button>
+          </div>
+          <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+            <span class="sun">☀️</span>
+            <span class="moon">🌙</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="main-nav">
+      <button class="nav-btn active" data-tab="overview"   onclick="switchTab('overview')">Overview</button>
+      <button class="nav-btn"        data-tab="heatmap"    onclick="switchTab('heatmap')">PnL Heatmaps</button>
+      <button class="nav-btn"        data-tab="performance" onclick="switchTab('performance')">Risk & Reward</button>
+      <button class="nav-btn"        data-tab="layers"     onclick="switchTab('layers')">Performance Metrics</button>
+      <button class="nav-btn"        data-tab="churning"   onclick="switchTab('churning')">Churning Analysis</button>
+      <button class="nav-btn"        data-tab="portfolio"  onclick="switchTab('portfolio')">Live Portfolio</button>
+      <button class="nav-btn"        data-tab="trades"     onclick="switchTab('trades')">Portfolio Changes</button>
+    </nav>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: OVERVIEW                            -->
+    <!-- ═══════════════════════════════════════ -->
+    <section id="tab-overview" class="tab-pane active">
+
+      <!-- KPI Row -->
+      <div class="kpi-grid" id="kpi-row"></div>
+
+      <!-- Charts Row -->
+      <div class="grid-2-1" style="margin-top:1.5rem">
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Institutional Equity Curves</h3>
+              <span class="card-sub">SQE vs Nifty 50 &amp; Nifty 500</span>
+            </div>
+            <div class="chart-controls" data-for="equityOverview"></div>
+          </div>
+          <div class="chart-area">
+            <canvas id="equityOverview"></canvas>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Sector Allocation</h3>
+            <span class="card-sub">Current Portfolio</span>
+          </div>
+          <div class="chart-area">
+            <canvas id="overviewSectorPie"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beta + Win Rate Row -->
+      <div class="grid-2" style="margin-top:1.5rem">
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Rolling Portfolio Beta</h3>
+              <span class="card-sub">Last 12 months</span>
+            </div>
+            <div class="chart-controls" data-for="betaChart"></div>
+          </div>
+          <div class="chart-area-sm">
+            <canvas id="betaChart"></canvas>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Win Rate by Layer</h3>
+              <span class="card-sub">% Positive Months</span>
+            </div>
+            <div class="chart-controls" data-for="winRateChart"></div>
+          </div>
+          <div class="chart-area-sm">
+            <canvas id="winRateChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: HEATMAPS                           -->
+    <!-- ═══════════════════════════════════════ -->
+    <section id="tab-heatmap" class="tab-pane">
+      <div class="glass-card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Monthly PnL Heatmaps</h3>
+            <span class="card-sub">Click any cell to compare vs Benchmark</span>
+          </div>
+          <!-- Layer selector -->
+          <div class="layer-tabs" id="heatmap-layer-tabs"></div>
+        </div>
+        <div id="heatmap-container"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: EQUITY                             -->
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: PERFORMANCE & RISK -->
+    <section id="tab-performance" class="tab-pane">
+      <div class="glass-card" style="margin-bottom:1.5rem">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Institutional Equity Curves</h3>
+            <span class="card-sub">SQE vs Nifty 50 &amp; Nifty 500</span>
+          </div>
+          <div class="chart-controls" data-for="equityMain"></div>
+        </div>
+        <div class="chart-area" style="height:450px">
+          <canvas id="equityMain"></canvas>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Underwater Curve (Drawdown)</h3>
+          </div>
+          <div class="chart-area-sm">
+            <canvas id="drawdownChart"></canvas>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Ex-Ante Sharpe Ratio</h3>
+          </div>
+          <div class="chart-area-sm">
+            <canvas id="rollingSharpeChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1.5rem">
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">PnL Attribution (Top Performers)</h3>
+          </div>
+          <div id="attribution-container" style="padding:1rem"></div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Strategy Correlation Matrix</h3>
+          </div>
+          <div id="correlation-container" style="padding:1rem"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: LAYERS                             -->
+    <!-- ═══════════════════════════════════════ -->
+    <section id="tab-layers" class="tab-pane">
+
+      <!-- Radar Chart + Table -->
+      <div class="grid-2-1">
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Strategy Layer Comparison</h3>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Layer</th>
+                  <th>CAGR</th><th>Ex-Ante SR</th><th>Calmar</th>
+                  <th>Max DD</th><th>Win Rate</th>
+                  <th>Avg Gain (M)</th><th>Avg Loss (M)</th>
+                  <th>Total Return</th><th>Alpha</th>
+                </tr>
+              </thead>
+              <tbody id="layerTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Risk-Return Radar</h3>
+          </div>
+          <div class="chart-area">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="glass-card" style="margin-top:1.5rem">
+        <div class="card-header">
+          <h3 class="card-title">Executive Summary — All Metrics</h3>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="execTable"></table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: CHURNING                           -->
+    <!-- ═══════════════════════════════════════ -->
+    <section id="tab-churning" class="tab-pane">
+      <div class="kpi-grid" id="churnKpis" style="margin-bottom: 1.5rem;"></div>
+      <div class="grid-2" style="margin-bottom:1.5rem">
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Stock Additions by Layer</h3>
+            <div class="chart-controls" data-for="churnAddChart"></div>
+          </div>
+          <div class="chart-area">
+            <canvas id="churnAddChart"></canvas>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Stock Removals by Layer</h3>
+            <div class="chart-controls" data-for="churnRemChart"></div>
+          </div>
+          <div class="chart-area">
+            <canvas id="churnRemChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="glass-card">
+        <div class="card-header">
+          <h3 class="card-title">Monthly Churning Detail</h3>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Month</th><th>Count</th>
+                <th class="text-emerald">Base Add</th>
+                <th class="text-rose">Base Rem</th>
+              </tr>
+            </thead>
+            <tbody id="churningBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: PORTFOLIO                          -->
+    <!-- ═══════════════════════════════════════ -->
+    <section id="tab-portfolio" class="tab-pane">
+      <!-- Live performance KPIs (daily + MTD) -->
+      <div class="kpi-grid" id="portPerformanceKpis" style="margin-bottom:1rem"></div>
+      <div class="kpi-grid" id="portKpis" style="margin-bottom:1.5rem"></div>
+      <div class="grid-2-1">
+        <div class="glass-card">
+          <div class="card-header" style="justify-content:space-between">
+            <h3 class="card-title">Current Holdings</h3>
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span class="modal-metric">Invest</span>
+              <span class="mono" style="color:var(--slate)">₹</span>
+              <input id="pinv-amt" type="number" min="0" step="10000" value="100000" oninput="recalcPortInvest()"
+                style="width:120px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:.4rem;color:var(--cyan);font-family:var(--mono);font-weight:700;padding:.3rem .5rem;font-size:.8rem">
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table mini-table">
+              <colgroup>
+                <col style="width:5%"><col style="width:17%"><col style="width:22%"><col style="width:10%"><col style="width:13%"><col style="width:11%"><col style="width:8%"><col style="width:14%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>#</th><th>Symbol</th><th>Sector</th><th>Weight</th><th>LTP</th><th>Today %</th><th>Qty</th><th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="holdingsBody"></tbody>
+              <tfoot>
+                <tr style="border-top:1px solid var(--border)">
+                  <td colspan="7" class="text-muted" style="font-size:.68rem;text-align:right">Total Invested</td>
+                  <td class="mono text-emerald" id="pinv-total" style="font-weight:700">—</td>
+                </tr>
+                <tr>
+                  <td colspan="7" class="text-muted" id="pinv-cash-label" style="font-size:.68rem;text-align:right">Cash Left</td>
+                  <td class="mono" id="pinv-cash" style="color:var(--slate)">—</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="card-header">
+            <h3 class="card-title">Sector Breakdown</h3>
+          </div>
+          <div class="chart-area">
+            <canvas id="portSector"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- TAB: TRADES                             -->
+    <!-- ═══════════════════════════════════════ -->
+    <section id="tab-trades" class="tab-pane">
+      <div class="glass-card">
+        <div class="card-header" style="justify-content:space-between">
+          <div>
+            <h3 class="card-title">Portfolio Changes</h3>
+            <span class="card-sub">What changed from last month's portfolio to the current one</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <span class="modal-metric">Invest</span>
+            <span class="mono" style="color:var(--slate)">₹</span>
+            <input id="cinv-amt" type="number" min="0" step="10000" value="100000" oninput="recalcChangesInvest()"
+              style="width:120px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:.4rem;color:var(--cyan);font-family:var(--mono);font-weight:700;padding:.3rem .5rem;font-size:.8rem">
+          </div>
+        </div>
+        <div class="mono" style="font-size:.7rem;color:var(--slate);margin-bottom:.75rem;display:flex;flex-wrap:wrap;gap:1.1rem">
+          <span><span style="color:#22d3ee">🔥</span> New holding</span>
+          <span><span style="color:#10b981">▲</span> Increased</span>
+          <span><span style="color:#f43f5e">▼</span> Decreased</span>
+          <span><span style="color:#94a3b8">↔</span> No change</span>
+          <span style="color:var(--muted)">— since last portfolio</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table mini-table">
+            <colgroup>
+              <col style="width:6%"><col style="width:17%"><col style="width:21%"><col style="width:13%"><col style="width:10%"><col style="width:13%"><col style="width:8%"><col style="width:12%">
+            </colgroup>
+            <thead>
+              <tr>
+                <th title="Change vs last month: 🔥 new, ▲ increased, ▼ decreased, ↔ no change">Δ</th>
+                <th>Symbol</th><th>Sector</th><th>Change</th><th>Weight</th><th>Price</th><th>Qty</th><th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="tradesBody"></tbody>
+            <tfoot>
+              <tr style="border-top:1px solid var(--border)">
+                <td colspan="7" class="text-muted" style="font-size:.68rem;text-align:right">Total Invested</td>
+                <td class="mono text-emerald" id="cinv-total" style="font-weight:700">—</td>
+              </tr>
+              <tr>
+                <td colspan="7" class="text-muted" id="cinv-cash-label" style="font-size:.68rem;text-align:right">Cash Left</td>
+                <td class="mono" id="cinv-cash" style="color:var(--slate)">—</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CDN Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/countup.js@2.8.0/dist/countUp.umd.js"></script>
+  <!-- Data must load before app (SQE v1.0 Cache Bust) -->
+  <script src="data.js?v=1782795066"></script>
+  <script src="holdings.js?v=1782795066"></script>
+  <script src="app.js?v=1782795066"></script>
+</body>
+</html>
