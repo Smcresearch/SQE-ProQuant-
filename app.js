@@ -189,30 +189,36 @@ function renderChartControls(id) {
 
 /* ── DATA ACCESSOR ───────────────────────────── */
 function D() { return DASHBOARD_DATA[state.universe]; }
+// Per-month holdings for the ACTIVE universe (holdings.js is keyed by universe).
+function H() { return (typeof MONTHLY_HOLDINGS !== 'undefined' && MONTHLY_HOLDINGS[state.universe]) || {}; }
 
-/* Inject the Nifty 50 benchmark into the nifty500 universe as a 'BenchN50'
+/* Inject the Nifty 50 benchmark into each portfolio universe as a 'BenchN50'
    series so the layer-iterating charts show both benchmarks. Idempotent. */
 function injectDualBenchmark() {
-  const t = DASHBOARD_DATA.nifty500, n50 = DASHBOARD_DATA.nifty50;
-  if (!t || !n50 || t.__dualBench) return;
-  t.__dualBench = true;
+  const n50 = DASHBOARD_DATA.nifty50;
+  if (!n50) return;
+  ['nifty500', 'total759'].forEach(u => {
+    const t = DASHBOARD_DATA[u];
+    if (!t || t.__dualBench) return;
+    t.__dualBench = true;
 
-  // Equity curve — align Nifty 50 benchmark onto the nifty500 month axis
-  if (t.equity_curves && n50.equity_curves) {
-    const byMonth = {};
-    (n50.equity_curves.months || []).forEach((mo, i) => { byMonth[mo] = n50.equity_curves.Bench?.[i]; });
-    t.equity_curves.BenchN50 = (t.equity_curves.months || []).map(mo => byMonth[mo] ?? null);
-  }
-  // Layer metrics
-  if (t.layer_metrics && n50.layer_metrics) {
-    t.layer_metrics.BenchN50 = n50.layer_metrics.Bench;
-  }
-  // Monthly detail — per-month Nifty 50 benchmark return (for heatmap + rolling calcs)
-  if (Array.isArray(t.monthly_detail) && Array.isArray(n50.monthly_detail)) {
-    const byMonth = {};
-    n50.monthly_detail.forEach(r => { byMonth[String(r.Month).slice(0, 7)] = r.Bench; });
-    t.monthly_detail.forEach(r => { r.BenchN50 = byMonth[String(r.Month).slice(0, 7)]; });
-  }
+    // Equity curve — align Nifty 50 benchmark onto this universe's month axis
+    if (t.equity_curves && n50.equity_curves) {
+      const byMonth = {};
+      (n50.equity_curves.months || []).forEach((mo, i) => { byMonth[mo] = n50.equity_curves.Bench?.[i]; });
+      t.equity_curves.BenchN50 = (t.equity_curves.months || []).map(mo => byMonth[mo] ?? null);
+    }
+    // Layer metrics
+    if (t.layer_metrics && n50.layer_metrics) {
+      t.layer_metrics.BenchN50 = n50.layer_metrics.Bench;
+    }
+    // Monthly detail — per-month Nifty 50 benchmark return (for heatmap + rolling calcs)
+    if (Array.isArray(t.monthly_detail) && Array.isArray(n50.monthly_detail)) {
+      const byMonth = {};
+      n50.monthly_detail.forEach(r => { byMonth[String(r.Month).slice(0, 7)] = r.Bench; });
+      t.monthly_detail.forEach(r => { r.BenchN50 = byMonth[String(r.Month).slice(0, 7)]; });
+    }
+  });
 }
 
 /* ── RENDER ROUTER ───────────────────────────── */
@@ -427,7 +433,7 @@ function openHeatModal(monthStr) {
   // Portfolio held during this month. Past months come from holdings.js snapshots;
   // the current/live month has no snapshot yet, so fall back to current_portfolio.
   const smap = DASHBOARD_DATA.sector_map || {};
-  let holds = (typeof MONTHLY_HOLDINGS !== 'undefined' && MONTHLY_HOLDINGS[monthStr]) || [];
+  let holds = H()[monthStr] || [];
   let portoLabel = 'SQE Portfolio';
   if (!holds.length) {
     const cp = (d.current_portfolio || []).filter(s => s.clean_symbol && s.clean_symbol !== 'Stock');
@@ -448,7 +454,7 @@ function openHeatModal(monthStr) {
   // month has no following snapshot, so recover ITS end-of-month price from the
   // live portfolio: ltp / (1 + MTD%) ~= start of next month ~= end of this
   // month. That keeps the figure bounded to the month (not a current-price move).
-  const snapMonths = (typeof MONTHLY_HOLDINGS !== 'undefined') ? Object.keys(MONTHLY_HOLDINGS).sort() : [];
+  const snapMonths = Object.keys(H()).sort();
   const lastSnap = snapMonths.length ? snapMonths[snapMonths.length - 1] : null;
   if (holds.length && monthStr === lastSnap) {
     const liveBy = {};
@@ -1277,7 +1283,7 @@ function renderTrades(d) {
   // Previous weight/price come from the most recent snapshot before this month,
   // so the "Change" can be computed at the user's chosen investment amount.
   const port = (d.current_portfolio || []).filter(s => s.clean_symbol && s.clean_symbol !== 'Stock');
-  const snap = (typeof MONTHLY_HOLDINGS !== 'undefined') ? MONTHLY_HOLDINGS : {};
+  const snap = H();
   const liveMonth = String((port.find(s => s.date) || {}).date || DASHBOARD_DATA.last_update || '').slice(0, 7);
   const prevMonths = Object.keys(snap).sort().filter(m => !liveMonth || m < liveMonth);
   const prevHolds = prevMonths.length ? snap[prevMonths[prevMonths.length - 1]] : [];
