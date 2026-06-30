@@ -5314,11 +5314,11 @@ const DASHBOARD_DATA = {
     "total_months": 78,
     "live_performance": {
       "portfolio_ret": 0.47,
-      "benchmark_ret": 0.37,
-      "alpha": 0.1,
+      "benchmark_ret": -0.46,
+      "alpha": 0.93,
       "portfolio_mtd": 1.51,
-      "benchmark_mtd": 2.36,
-      "alpha_mtd": -0.85,
+      "benchmark_mtd": 1.69,
+      "alpha_mtd": -0.18,
       "indicator": "up"
     }
   },
@@ -11492,11 +11492,11 @@ const DASHBOARD_DATA = {
     "total_months": 78,
     "live_performance": {
       "portfolio_ret": 1.56,
-      "benchmark_ret": 0.51,
-      "alpha": 1.05,
+      "benchmark_ret": -0.49,
+      "alpha": 2.05,
       "portfolio_mtd": 2.89,
-      "benchmark_mtd": 2.67,
-      "alpha_mtd": 0.22,
+      "benchmark_mtd": 1.51,
+      "alpha_mtd": 1.38,
       "indicator": "up"
     }
   },
@@ -16197,11 +16197,11 @@ const DASHBOARD_DATA = {
         "erb": 1.2612,
         "action": "SELL 887",
         "status": "Remained",
-        "ltp": 298.700012,
-        "change_pct": 3.11,
-        "mtd_change_pct": 3.52,
-        "prev_close": 289.700012,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 289.700012,
+        "change_pct": 1.47,
+        "mtd_change_pct": 0.4,
+        "prev_close": 285.5,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "PIRAMALFIN_1d_max",
@@ -16287,11 +16287,11 @@ const DASHBOARD_DATA = {
         "erb": 0.703752,
         "action": "SELL 97",
         "status": "Remained",
-        "ltp": 1397.099976,
-        "change_pct": -1.58,
-        "mtd_change_pct": 38.93,
-        "prev_close": 1419.599976,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 1419.599976,
+        "change_pct": 0.21,
+        "mtd_change_pct": 41.17,
+        "prev_close": 1416.599976,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "ATLANTAELE_1d_max",
@@ -16302,11 +16302,11 @@ const DASHBOARD_DATA = {
         "erb": 1.337518,
         "action": "SELL 6",
         "status": "Remained",
-        "ltp": 1821.300049,
-        "change_pct": 1.83,
-        "mtd_change_pct": -7.64,
-        "prev_close": 1788.599976,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 1788.599976,
+        "change_pct": -1.08,
+        "mtd_change_pct": -9.3,
+        "prev_close": 1808.199951,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "LENSKART_1d_max",
@@ -16332,11 +16332,11 @@ const DASHBOARD_DATA = {
         "erb": 0.644359,
         "action": "SELL 383",
         "status": "Remained",
-        "ltp": 1965.800049,
-        "change_pct": -0.15,
-        "mtd_change_pct": 17.24,
-        "prev_close": 1968.800049,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 1968.800049,
+        "change_pct": 3.62,
+        "mtd_change_pct": 17.42,
+        "prev_close": 1900.0,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "CUPID_1d_max",
@@ -16347,11 +16347,11 @@ const DASHBOARD_DATA = {
         "erb": 1.11836,
         "action": "SELL 329",
         "status": "Remained",
-        "ltp": 190.759995,
-        "change_pct": 1.25,
-        "mtd_change_pct": 47.81,
-        "prev_close": 188.399994,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 188.399994,
+        "change_pct": 3.17,
+        "mtd_change_pct": 45.98,
+        "prev_close": 182.610001,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "SKYGOLD_1d_max",
@@ -16362,11 +16362,11 @@ const DASHBOARD_DATA = {
         "erb": 1.223302,
         "action": "SELL 52",
         "status": "Remained",
-        "ltp": 514.0,
-        "change_pct": 0.37,
-        "mtd_change_pct": -1.34,
-        "prev_close": 512.099976,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 512.099976,
+        "change_pct": 2.59,
+        "mtd_change_pct": -1.71,
+        "prev_close": 499.149994,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "SHAILY_1d_max",
@@ -16377,11 +16377,11 @@ const DASHBOARD_DATA = {
         "erb": 0.864811,
         "action": "BUY 12",
         "status": "Remained",
-        "ltp": 2914.5,
-        "change_pct": 0.61,
-        "mtd_change_pct": -2.51,
-        "prev_close": 2896.899902,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 2896.899902,
+        "change_pct": 1.66,
+        "mtd_change_pct": -3.1,
+        "prev_close": 2849.699951,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "HCG_1d_max",
@@ -16392,11 +16392,11 @@ const DASHBOARD_DATA = {
         "erb": 0.733869,
         "action": "BUY 170",
         "status": "Remained",
-        "ltp": 612.799988,
-        "change_pct": 2.98,
-        "mtd_change_pct": -3.84,
-        "prev_close": 595.049988,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 595.049988,
+        "change_pct": -0.89,
+        "mtd_change_pct": -6.62,
+        "prev_close": 600.400024,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "JSLL_1d_max",
@@ -16407,11 +16407,11 @@ const DASHBOARD_DATA = {
         "erb": 1.297714,
         "action": "BUY 9",
         "status": "Remained",
-        "ltp": 584.799988,
-        "change_pct": -0.36,
-        "mtd_change_pct": -4.9,
-        "prev_close": 586.900024,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 586.900024,
+        "change_pct": -2.51,
+        "mtd_change_pct": -4.56,
+        "prev_close": 602.0,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "GOKULAGRO_1d_max",
@@ -16422,11 +16422,11 @@ const DASHBOARD_DATA = {
         "erb": 0.800023,
         "action": "BUY 388",
         "status": "Remained",
-        "ltp": 209.360001,
-        "change_pct": -1.54,
-        "mtd_change_pct": -8.61,
-        "prev_close": 212.630005,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 212.630005,
+        "change_pct": -2.28,
+        "mtd_change_pct": -7.18,
+        "prev_close": 217.580002,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "CHOICEIN_1d_max",
@@ -16452,11 +16452,11 @@ const DASHBOARD_DATA = {
         "erb": 0.811027,
         "action": "BUY 3",
         "status": "Remained",
-        "ltp": 2034.099976,
-        "change_pct": 1.52,
-        "mtd_change_pct": 23.02,
-        "prev_close": 2003.699951,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 2003.699951,
+        "change_pct": -3.25,
+        "mtd_change_pct": 21.18,
+        "prev_close": 2071.0,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "TARIL_1d_max",
@@ -16512,11 +16512,11 @@ const DASHBOARD_DATA = {
         "erb": 0.654999,
         "action": "SELL 32",
         "status": "Remained",
-        "ltp": 448.600006,
-        "change_pct": 0.72,
-        "mtd_change_pct": -1.48,
-        "prev_close": 445.399994,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 445.399994,
+        "change_pct": 2.67,
+        "mtd_change_pct": -2.19,
+        "prev_close": 433.799988,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "AVL_1d_max",
@@ -16527,11 +16527,11 @@ const DASHBOARD_DATA = {
         "erb": 0.82328,
         "action": "BUY 20",
         "status": "Remained",
-        "ltp": 672.75,
-        "change_pct": 0.63,
-        "mtd_change_pct": 25.78,
-        "prev_close": 668.549988,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 668.549988,
+        "change_pct": 1.3,
+        "mtd_change_pct": 25.0,
+        "prev_close": 660.0,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "DIACABS_1d_max",
@@ -16542,11 +16542,11 @@ const DASHBOARD_DATA = {
         "erb": 0.669723,
         "action": "BUY 87",
         "status": "Remained",
-        "ltp": 207.490005,
-        "change_pct": -0.5,
-        "mtd_change_pct": 6.78,
-        "prev_close": 208.539993,
-        "date": "2026-06-30 00:00:00"
+        "ltp": 208.539993,
+        "change_pct": 1.11,
+        "mtd_change_pct": 7.32,
+        "prev_close": 206.25,
+        "date": "2026-06-29 00:00:00"
       },
       {
         "symbol": "TVSMOTOR_1d_max",
@@ -17669,12 +17669,12 @@ const DASHBOARD_DATA = {
     },
     "total_months": 78,
     "live_performance": {
-      "portfolio_ret": 1.52,
-      "benchmark_ret": 0.51,
-      "alpha": 1.01,
-      "portfolio_mtd": 10.59,
-      "benchmark_mtd": 2.67,
-      "alpha_mtd": 7.92,
+      "portfolio_ret": 1.4,
+      "benchmark_ret": -0.49,
+      "alpha": 1.89,
+      "portfolio_mtd": 10.22,
+      "benchmark_mtd": 1.51,
+      "alpha_mtd": 8.71,
       "indicator": "up"
     }
   },
@@ -18443,5 +18443,5 @@ const DASHBOARD_DATA = {
     "YATHARTH": "Healthcare",
     "ZAGGLE": "Information Technology"
   },
-  "last_update": "2026-06-30 11:04:52 IST"
+  "last_update": "2026-06-30 11:14:50 IST"
 };
