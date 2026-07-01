@@ -36,6 +36,7 @@ function switchUniverse(u) {
   document.getElementById('btn-n500')?.classList.toggle('active', u === 'nifty500');
   document.getElementById('btn-n759')?.classList.toggle('active', u === 'total759');
   document.getElementById('btn-ml')?.classList.toggle('active', u === 'ml_forecast');
+  document.getElementById('btn-hq')?.classList.toggle('active', u === 'high_quality');
   renderTab(state.tab);
 }
 
@@ -198,7 +199,7 @@ function H() { return (typeof MONTHLY_HOLDINGS !== 'undefined' && MONTHLY_HOLDIN
 function injectDualBenchmark() {
   const n50 = DASHBOARD_DATA.nifty50;
   if (!n50) return;
-  ['nifty500', 'total759', 'ml_forecast'].forEach(u => {
+  ['nifty500', 'total759', 'ml_forecast', 'high_quality'].forEach(u => {
     const t = DASHBOARD_DATA[u];
     if (!t || t.__dualBench) return;
     t.__dualBench = true;
