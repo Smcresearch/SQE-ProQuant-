@@ -187,7 +187,7 @@ body::before {
 @media print {
   body { background: white !important; color: black !important; }
   .app-container { max-width: 100% !important; padding: 0 !important; }
-  .main-nav, .theme-toggle, .universe-tabs, .export-btn, .chart-controls, #particles-js, .regime-badge { display: none !important; }
+  .main-nav, .theme-toggle, .universe-tabs, .univ-switch, .export-btn, .chart-controls, #particles-js, .regime-badge { display: none !important; }
   .glass-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; margin-bottom: 2rem !important; }
   .kpi-card { border: 1px solid #ddd !important; background: #fcfcfc !important; color: black !important; }
   .tab-pane { display: block !important; opacity: 1 !important; visibility: visible !important; }
