@@ -260,7 +260,9 @@ function renderOverview(d) {
   const kpis = [
     { label: 'CAGR (SQE)',       val: base.CAGR,          unit: '%', color: '#22d3ee', accent: '#22d3ee' },
     { label: 'Ex-Ante Sharpe',   val: d.avg_ex_ante_sr,   unit: '',  color: '#f59e0b', accent: '#f59e0b' },
+    { label: 'Sortino',          val: base.Sortino,        unit: '',  color: '#eab308', accent: '#eab308' },
     { label: 'Max Drawdown',     val: base.Max_DD,         unit: '%', color: '#f43f5e', accent: '#f43f5e' },
+    { label: 'DD Recovery',      val: base.Recovery_Months ?? 0, unit: ' mo', dp: 0, color: '#fb7185', accent: '#fb7185' },
     { label: 'Total Return',     val: base.Total_Return,   unit: '%', color: '#10b981', accent: '#10b981' },
     { label: 'Avg Gain (M)',     val: base.Avg_Gain,       unit: '%', color: '#8b5cf6', accent: '#8b5cf6' },
     { label: 'Avg Loss (M)',     val: base.Avg_Loss,       unit: '%', color: '#f97316', accent: '#f97316' },
@@ -273,14 +275,15 @@ function renderOverview(d) {
     <div class="kpi-card" style="--accent:${k.accent}">
       <span class="kpi-label">${k.label}</span>
       <span class="kpi-value" style="color:${k.color}" id="ov-kpi-${i}">—</span>
-      <span class="kpi-delta ${k.val >= 0 ? 'pos' : 'neg'}">${k.val >= 0 ? '▲' : '▼'} ${Math.abs(k.val).toFixed(2)}${k.unit}</span>
+      <span class="kpi-delta ${k.val >= 0 ? 'pos' : 'neg'}">${k.val >= 0 ? '▲' : '▼'} ${Math.abs(k.val).toFixed(k.dp ?? 2)}${k.unit}</span>
     </div>`).join('');
 
   kpis.forEach((k, i) => {
+    const dp = k.dp ?? 2;
     if (window.countUp) {
-      new window.countUp.CountUp('ov-kpi-' + i, k.val, { decimalPlaces: 2, suffix: k.unit, duration: 1.2 }).start();
+      new window.countUp.CountUp('ov-kpi-' + i, k.val, { decimalPlaces: dp, suffix: k.unit, duration: 1.2 }).start();
     } else {
-      document.getElementById('ov-kpi-' + i).textContent = k.val.toFixed(2) + k.unit;
+      document.getElementById('ov-kpi-' + i).textContent = k.val.toFixed(dp) + k.unit;
     }
   });
 
@@ -1025,8 +1028,10 @@ function renderLayers(d) {
       <td><span class="ltag ${LAYERS[l].cls}">${LAYERS[l].label}</span></td>
       <td class="mono ${m.CAGR>=0?'text-emerald':'text-rose'}" style="font-weight:700">${m.CAGR.toFixed(2)}%</td>
       <td class="mono">${ea}</td>
+      <td class="mono">${m.Sortino != null ? m.Sortino.toFixed(2) : '—'}</td>
       <td class="mono">${m.Calmar.toFixed(2)}</td>
       <td class="mono text-rose" style="font-weight:700">${m.Max_DD.toFixed(2)}%</td>
+      <td class="mono">${m.Recovery_Months != null ? m.Recovery_Months + ' mo' : '—'}</td>
       <td class="mono">${m.Win_Rate.toFixed(1)}%</td>
       <td class="mono text-emerald">${m.Avg_Gain.toFixed(2)}%</td>
       <td class="mono text-rose">${m.Avg_Loss.toFixed(2)}%</td>
