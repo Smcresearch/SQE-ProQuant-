@@ -4723,11 +4723,11 @@ const DASHBOARD_DATA = {
         "erb": 0.285121,
         "action": "BUY 506",
         "status": "Remained",
-        "ltp": 234.990005,
-        "change_pct": 0.04,
-        "mtd_change_pct": 0.04,
-        "prev_close": 234.899994,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 235.410004,
+        "change_pct": 0.18,
+        "mtd_change_pct": 0.22,
+        "prev_close": 234.990005,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "BEL_1d_max",
@@ -4738,11 +4738,11 @@ const DASHBOARD_DATA = {
         "erb": 0.333525,
         "action": "BUY 3",
         "status": "Remained",
-        "ltp": 416.25,
-        "change_pct": 1.08,
-        "mtd_change_pct": 1.08,
-        "prev_close": 411.799988,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 413.25,
+        "change_pct": -0.72,
+        "mtd_change_pct": 0.35,
+        "prev_close": 416.25,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "M&M_1d_max",
@@ -4753,11 +4753,11 @@ const DASHBOARD_DATA = {
         "erb": 0.270836,
         "action": "SELL 2",
         "status": "Remained",
-        "ltp": 3097.0,
-        "change_pct": 0.92,
-        "mtd_change_pct": 0.92,
-        "prev_close": 3068.800049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 3149.800049,
+        "change_pct": 1.7,
+        "mtd_change_pct": 2.64,
+        "prev_close": 3097.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "COALINDIA_1d_max",
@@ -4768,11 +4768,11 @@ const DASHBOARD_DATA = {
         "erb": 0.378793,
         "action": "BUY 87",
         "status": "Remained",
-        "ltp": 434.75,
-        "change_pct": -0.98,
-        "mtd_change_pct": -0.98,
-        "prev_close": 439.049988,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 435.149994,
+        "change_pct": 0.09,
+        "mtd_change_pct": -0.89,
+        "prev_close": 434.75,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "BHARTIARTL_1d_max",
@@ -4783,11 +4783,11 @@ const DASHBOARD_DATA = {
         "erb": 0.254719,
         "action": "SELL 7",
         "status": "Remained",
-        "ltp": 1871.0,
-        "change_pct": 1.03,
-        "mtd_change_pct": 1.03,
-        "prev_close": 1852.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1863.300049,
+        "change_pct": -0.41,
+        "mtd_change_pct": 0.61,
+        "prev_close": 1871.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "MAXHEALTH_1d_max",
@@ -4798,11 +4798,11 @@ const DASHBOARD_DATA = {
         "erb": 0.296713,
         "action": "SELL 145",
         "status": "Remained",
-        "ltp": 1139.900024,
-        "change_pct": 0.94,
-        "mtd_change_pct": 0.94,
-        "prev_close": 1129.25,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1134.400024,
+        "change_pct": -0.48,
+        "mtd_change_pct": 0.46,
+        "prev_close": 1139.900024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "NTPC_1d_max",
@@ -4813,11 +4813,11 @@ const DASHBOARD_DATA = {
         "erb": 0.271572,
         "action": "BUY 219",
         "status": "Remained",
-        "ltp": 357.899994,
-        "change_pct": 0.35,
-        "mtd_change_pct": 0.35,
-        "prev_close": 356.649994,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 358.299988,
+        "change_pct": 0.11,
+        "mtd_change_pct": 0.46,
+        "prev_close": 357.899994,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "SHRIRAMFIN_1d_max",
@@ -4828,11 +4828,11 @@ const DASHBOARD_DATA = {
         "erb": 0.277794,
         "action": "SELL 93",
         "status": "Remained",
-        "ltp": 1048.099976,
-        "change_pct": 0.57,
-        "mtd_change_pct": 0.57,
-        "prev_close": 1042.150024,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1066.0,
+        "change_pct": 1.71,
+        "mtd_change_pct": 2.29,
+        "prev_close": 1048.099976,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "SUNPHARMA_1d_max",
@@ -4843,11 +4843,11 @@ const DASHBOARD_DATA = {
         "erb": 0.230132,
         "action": "BUY 77",
         "status": "Remained",
-        "ltp": 1866.199951,
-        "change_pct": 0.2,
-        "mtd_change_pct": 0.2,
-        "prev_close": 1862.5,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1874.300049,
+        "change_pct": 0.43,
+        "mtd_change_pct": 0.63,
+        "prev_close": 1866.199951,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "EICHERMOT_1d_max",
@@ -4858,11 +4858,11 @@ const DASHBOARD_DATA = {
         "erb": 0.208383,
         "action": "BUY 43",
         "status": "Remained",
-        "ltp": 7139.0,
-        "change_pct": 0.93,
-        "mtd_change_pct": 0.93,
-        "prev_close": 7073.5,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 7258.5,
+        "change_pct": 1.67,
+        "mtd_change_pct": 2.62,
+        "prev_close": 7139.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "APOLLOHOSP_1d_max",
@@ -4873,11 +4873,11 @@ const DASHBOARD_DATA = {
         "erb": 0.21029,
         "action": "SELL 26",
         "status": "Remained",
-        "ltp": 8618.5,
-        "change_pct": -0.73,
-        "mtd_change_pct": -0.73,
-        "prev_close": 8682.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 8703.5,
+        "change_pct": 0.99,
+        "mtd_change_pct": 0.25,
+        "prev_close": 8618.5,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "POWERGRID_1d_max",
@@ -4888,11 +4888,11 @@ const DASHBOARD_DATA = {
         "erb": 0.202627,
         "action": "SELL 906",
         "status": "Remained",
-        "ltp": 287.549988,
-        "change_pct": 0.44,
-        "mtd_change_pct": 0.44,
-        "prev_close": 286.299988,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 288.149994,
+        "change_pct": 0.21,
+        "mtd_change_pct": 0.65,
+        "prev_close": 287.549988,
+        "date": "2026-07-02 00:00:00"
       }
     ],
     "exec_history": [
@@ -5355,12 +5355,12 @@ const DASHBOARD_DATA = {
     },
     "total_months": 79,
     "live_performance": {
-      "portfolio_ret": 0.44,
+      "portfolio_ret": 0.39,
       "benchmark_ret": 0.59,
-      "alpha": -0.15,
-      "portfolio_mtd": 0.44,
-      "benchmark_mtd": 0.59,
-      "alpha_mtd": -0.15,
+      "alpha": -0.2,
+      "portfolio_mtd": 0.83,
+      "benchmark_mtd": 1.18,
+      "alpha_mtd": -0.35,
       "indicator": "up"
     }
   },
@@ -10088,11 +10088,11 @@ const DASHBOARD_DATA = {
         "erb": 1.134717,
         "action": "SELL 51",
         "status": "Remained",
-        "ltp": 3572.300049,
-        "change_pct": -2.05,
-        "mtd_change_pct": -2.05,
-        "prev_close": 3647.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 3470.0,
+        "change_pct": -2.86,
+        "mtd_change_pct": -4.85,
+        "prev_close": 3572.300049,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "BELRISE_1d_max",
@@ -10103,11 +10103,11 @@ const DASHBOARD_DATA = {
         "erb": 2.204127,
         "action": "SELL 418",
         "status": "Remained",
-        "ltp": 237.0,
-        "change_pct": -0.66,
-        "mtd_change_pct": -0.66,
-        "prev_close": 238.570007,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 238.509995,
+        "change_pct": 0.64,
+        "mtd_change_pct": -0.03,
+        "prev_close": 237.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "EMMVEE_1d_max",
@@ -10118,11 +10118,11 @@ const DASHBOARD_DATA = {
         "erb": 1.647748,
         "action": "BUY 398",
         "status": "Remained",
-        "ltp": 351.950012,
-        "change_pct": 2.61,
-        "mtd_change_pct": 2.61,
-        "prev_close": 343.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 364.299988,
+        "change_pct": 3.51,
+        "mtd_change_pct": 6.21,
+        "prev_close": 351.950012,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "ATHERENERG_1d_max",
@@ -10133,11 +10133,11 @@ const DASHBOARD_DATA = {
         "erb": 1.254314,
         "action": "SELL 154",
         "status": "Remained",
-        "ltp": 1130.400024,
-        "change_pct": -0.89,
-        "mtd_change_pct": -0.89,
-        "prev_close": 1140.550049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1131.300049,
+        "change_pct": 0.08,
+        "mtd_change_pct": -0.81,
+        "prev_close": 1130.400024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "PIRAMALFIN_1d_max",
@@ -10148,11 +10148,11 @@ const DASHBOARD_DATA = {
         "erb": 3.308038,
         "action": "SELL 62",
         "status": "Remained",
-        "ltp": 2197.100098,
-        "change_pct": 1.52,
-        "mtd_change_pct": 1.52,
-        "prev_close": 2164.100098,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 2172.0,
+        "change_pct": -1.14,
+        "mtd_change_pct": 0.37,
+        "prev_close": 2197.100098,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CANHLIFE_1d_max",
@@ -10163,11 +10163,11 @@ const DASHBOARD_DATA = {
         "erb": 2.608712,
         "action": "BUY 1679",
         "status": "Remained",
-        "ltp": 140.389999,
-        "change_pct": 0.38,
-        "mtd_change_pct": 0.38,
-        "prev_close": 139.860001,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 141.0,
+        "change_pct": 0.43,
+        "mtd_change_pct": 0.82,
+        "prev_close": 140.389999,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CHOICEIN_1d_max",
@@ -10178,11 +10178,11 @@ const DASHBOARD_DATA = {
         "erb": 0.652229,
         "action": "BUY 192",
         "status": "Remained",
-        "ltp": 763.849976,
-        "change_pct": 1.41,
-        "mtd_change_pct": 1.41,
-        "prev_close": 753.200012,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 780.450012,
+        "change_pct": 2.17,
+        "mtd_change_pct": 3.62,
+        "prev_close": 763.849976,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "ANANDRATHI_1d_max",
@@ -10193,11 +10193,11 @@ const DASHBOARD_DATA = {
         "erb": 1.329042,
         "action": "BUY 52",
         "status": "Remained",
-        "ltp": 1964.900024,
-        "change_pct": -0.6,
-        "mtd_change_pct": -0.6,
-        "prev_close": 1976.699951,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1981.599976,
+        "change_pct": 0.85,
+        "mtd_change_pct": 0.25,
+        "prev_close": 1964.900024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "LENSKART_1d_max",
@@ -10208,11 +10208,11 @@ const DASHBOARD_DATA = {
         "erb": 0.672098,
         "action": "SELL 318",
         "status": "Remained",
-        "ltp": 530.549988,
-        "change_pct": 3.03,
-        "mtd_change_pct": 3.03,
-        "prev_close": 514.950012,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 529.650024,
+        "change_pct": -0.17,
+        "mtd_change_pct": 2.85,
+        "prev_close": 530.549988,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "TVSMOTOR_1d_max",
@@ -10223,11 +10223,11 @@ const DASHBOARD_DATA = {
         "erb": 0.60849,
         "action": "BUY 27",
         "status": "Remained",
-        "ltp": 3494.0,
-        "change_pct": 0.97,
-        "mtd_change_pct": 0.97,
-        "prev_close": 3460.600098,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 3623.100098,
+        "change_pct": 3.69,
+        "mtd_change_pct": 4.7,
+        "prev_close": 3494.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "APARINDS_1d_max",
@@ -10238,11 +10238,11 @@ const DASHBOARD_DATA = {
         "erb": 0.692093,
         "action": "BUY 4",
         "status": "Remained",
-        "ltp": 14598.0,
-        "change_pct": -6.99,
-        "mtd_change_pct": -6.99,
-        "prev_close": 15695.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 14967.0,
+        "change_pct": 2.53,
+        "mtd_change_pct": -4.64,
+        "prev_close": 14598.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "BSE_1d_max",
@@ -10253,11 +10253,11 @@ const DASHBOARD_DATA = {
         "erb": 0.651286,
         "action": "BUY 18",
         "status": "Remained",
-        "ltp": 3944.100098,
-        "change_pct": 2.03,
-        "mtd_change_pct": 2.03,
-        "prev_close": 3865.600098,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 3873.100098,
+        "change_pct": -1.8,
+        "mtd_change_pct": 0.19,
+        "prev_close": 3944.100098,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "TARIL_1d_max",
@@ -10268,11 +10268,11 @@ const DASHBOARD_DATA = {
         "erb": 0.747219,
         "action": "BUY 44",
         "status": "Remained",
-        "ltp": 358.950012,
-        "change_pct": 2.16,
-        "mtd_change_pct": 2.16,
-        "prev_close": 351.350006,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 358.899994,
+        "change_pct": -0.01,
+        "mtd_change_pct": 2.15,
+        "prev_close": 358.950012,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "POWERINDIA_1d_max",
@@ -10283,11 +10283,11 @@ const DASHBOARD_DATA = {
         "erb": 0.572091,
         "action": "BUY 1",
         "status": "Remained",
-        "ltp": 34250.0,
-        "change_pct": -1.92,
-        "mtd_change_pct": -1.92,
-        "prev_close": 34920.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 34025.0,
+        "change_pct": -0.66,
+        "mtd_change_pct": -2.56,
+        "prev_close": 34250.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "PGEL_1d_max",
@@ -10298,11 +10298,11 @@ const DASHBOARD_DATA = {
         "erb": 0.621943,
         "action": "BUY 60",
         "status": "Remained",
-        "ltp": 550.799988,
-        "change_pct": 3.26,
-        "mtd_change_pct": 3.26,
-        "prev_close": 533.400024,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 563.450012,
+        "change_pct": 2.3,
+        "mtd_change_pct": 5.63,
+        "prev_close": 550.799988,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "LINDEINDIA_1d_max",
@@ -10313,11 +10313,11 @@ const DASHBOARD_DATA = {
         "erb": 0.543019,
         "action": "BUY 1",
         "status": "Remained",
-        "ltp": 7212.0,
-        "change_pct": -1.35,
-        "mtd_change_pct": -1.35,
-        "prev_close": 7311.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 7187.5,
+        "change_pct": -0.34,
+        "mtd_change_pct": -1.69,
+        "prev_close": 7212.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "INDIANB_1d_max",
@@ -10328,11 +10328,11 @@ const DASHBOARD_DATA = {
         "erb": 0.504782,
         "action": "SELL 20",
         "status": "Remained",
-        "ltp": 820.950012,
-        "change_pct": 0.53,
-        "mtd_change_pct": 0.53,
-        "prev_close": 816.650024,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 814.150024,
+        "change_pct": -0.83,
+        "mtd_change_pct": -0.31,
+        "prev_close": 820.950012,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "MEDANTA_1d_max",
@@ -10343,11 +10343,11 @@ const DASHBOARD_DATA = {
         "erb": 0.50689,
         "action": "BUY 39",
         "status": "Added",
-        "ltp": 1328.0,
-        "change_pct": 1.08,
-        "mtd_change_pct": 1.08,
-        "prev_close": 1313.800049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1343.400024,
+        "change_pct": 1.16,
+        "mtd_change_pct": 2.25,
+        "prev_close": 1328.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "HBLENGINE_1d_max",
@@ -10358,11 +10358,11 @@ const DASHBOARD_DATA = {
         "erb": 0.506093,
         "action": "SELL 10",
         "status": "Remained",
-        "ltp": 822.299988,
-        "change_pct": 1.24,
-        "mtd_change_pct": 1.24,
-        "prev_close": 812.25,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 824.349976,
+        "change_pct": 0.25,
+        "mtd_change_pct": 1.49,
+        "prev_close": 822.299988,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "OIL_1d_max",
@@ -10373,11 +10373,11 @@ const DASHBOARD_DATA = {
         "erb": 0.510754,
         "action": "SELL 162",
         "status": "Remained",
-        "ltp": 419.799988,
-        "change_pct": 0.68,
-        "mtd_change_pct": 0.68,
-        "prev_close": 416.950012,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 421.0,
+        "change_pct": 0.29,
+        "mtd_change_pct": 0.97,
+        "prev_close": 419.799988,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CHENNPETRO_1d_max",
@@ -10388,11 +10388,11 @@ const DASHBOARD_DATA = {
         "erb": 0.503353,
         "action": "HOLD",
         "status": "Remained",
-        "ltp": 1134.0,
-        "change_pct": -1.93,
-        "mtd_change_pct": -1.93,
-        "prev_close": 1156.300049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1135.400024,
+        "change_pct": 0.12,
+        "mtd_change_pct": -1.81,
+        "prev_close": 1134.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "SAILIFE_1d_max",
@@ -10403,11 +10403,11 @@ const DASHBOARD_DATA = {
         "erb": 0.482721,
         "action": "BUY 6",
         "status": "Added",
-        "ltp": 1243.800049,
-        "change_pct": 0.77,
-        "mtd_change_pct": 0.77,
-        "prev_close": 1234.300049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1238.199951,
+        "change_pct": -0.45,
+        "mtd_change_pct": 0.32,
+        "prev_close": 1243.800049,
+        "date": "2026-07-02 00:00:00"
       }
     ],
     "exec_history": [
@@ -11240,12 +11240,12 @@ const DASHBOARD_DATA = {
     },
     "total_months": 79,
     "live_performance": {
-      "portfolio_ret": 0.22,
-      "benchmark_ret": 0.5,
-      "alpha": -0.28,
-      "portfolio_mtd": 0.22,
-      "benchmark_mtd": 0.5,
-      "alpha_mtd": -0.28,
+      "portfolio_ret": 0.51,
+      "benchmark_ret": 0.56,
+      "alpha": -0.05,
+      "portfolio_mtd": 0.74,
+      "benchmark_mtd": 1.07,
+      "alpha_mtd": -0.33,
       "indicator": "up"
     }
   },
@@ -15973,11 +15973,11 @@ const DASHBOARD_DATA = {
         "erb": 0.926276,
         "action": "BUY 319",
         "status": "Remained",
-        "ltp": 1955.900024,
-        "change_pct": -0.5,
-        "mtd_change_pct": -0.5,
-        "prev_close": 1965.800049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1989.800049,
+        "change_pct": 1.73,
+        "mtd_change_pct": 1.22,
+        "prev_close": 1955.900024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "BELRISE_1d_max",
@@ -15988,11 +15988,11 @@ const DASHBOARD_DATA = {
         "erb": 2.204172,
         "action": "SELL 419",
         "status": "Remained",
-        "ltp": 237.0,
-        "change_pct": -0.66,
-        "mtd_change_pct": -0.66,
-        "prev_close": 238.570007,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 238.509995,
+        "change_pct": 0.64,
+        "mtd_change_pct": -0.03,
+        "prev_close": 237.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "PIRAMALFIN_1d_max",
@@ -16003,11 +16003,11 @@ const DASHBOARD_DATA = {
         "erb": 3.346221,
         "action": "SELL 59",
         "status": "Remained",
-        "ltp": 2197.100098,
-        "change_pct": 1.52,
-        "mtd_change_pct": 1.52,
-        "prev_close": 2164.100098,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 2172.0,
+        "change_pct": -1.14,
+        "mtd_change_pct": 0.37,
+        "prev_close": 2197.100098,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "PARKHOSPS_1d_max",
@@ -16018,11 +16018,11 @@ const DASHBOARD_DATA = {
         "erb": 1.217529,
         "action": "SELL 104",
         "status": "Remained",
-        "ltp": 295.350006,
-        "change_pct": -1.12,
-        "mtd_change_pct": -1.12,
-        "prev_close": 298.700012,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 287.399994,
+        "change_pct": -2.69,
+        "mtd_change_pct": -3.78,
+        "prev_close": 295.350006,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "ATHERENERG_1d_max",
@@ -16033,11 +16033,11 @@ const DASHBOARD_DATA = {
         "erb": 1.241343,
         "action": "SELL 84",
         "status": "Remained",
-        "ltp": 1130.400024,
-        "change_pct": -0.89,
-        "mtd_change_pct": -0.89,
-        "prev_close": 1140.550049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1131.300049,
+        "change_pct": 0.08,
+        "mtd_change_pct": -0.81,
+        "prev_close": 1130.400024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CPPLUS_1d_max",
@@ -16048,11 +16048,11 @@ const DASHBOARD_DATA = {
         "erb": 1.140342,
         "action": "SELL 16",
         "status": "Remained",
-        "ltp": 3572.300049,
-        "change_pct": -2.05,
-        "mtd_change_pct": -2.05,
-        "prev_close": 3647.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 3470.0,
+        "change_pct": -2.86,
+        "mtd_change_pct": -4.85,
+        "prev_close": 3572.300049,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "EMMVEE_1d_max",
@@ -16063,11 +16063,11 @@ const DASHBOARD_DATA = {
         "erb": 1.621847,
         "action": "SELL 98",
         "status": "Remained",
-        "ltp": 351.950012,
-        "change_pct": 2.61,
-        "mtd_change_pct": 2.61,
-        "prev_close": 343.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 364.299988,
+        "change_pct": 3.51,
+        "mtd_change_pct": 6.21,
+        "prev_close": 351.950012,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "RUBICON_1d_max",
@@ -16078,11 +16078,11 @@ const DASHBOARD_DATA = {
         "erb": 0.988481,
         "action": "SELL 135",
         "status": "Remained",
-        "ltp": 1368.199951,
-        "change_pct": -2.07,
-        "mtd_change_pct": -2.07,
-        "prev_close": 1397.099976,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1380.699951,
+        "change_pct": 0.91,
+        "mtd_change_pct": -1.17,
+        "prev_close": 1368.199951,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CANHLIFE_1d_max",
@@ -16093,11 +16093,11 @@ const DASHBOARD_DATA = {
         "erb": 2.533271,
         "action": "SELL 1051",
         "status": "Remained",
-        "ltp": 140.389999,
-        "change_pct": 0.38,
-        "mtd_change_pct": 0.38,
-        "prev_close": 139.860001,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 141.0,
+        "change_pct": 0.43,
+        "mtd_change_pct": 0.82,
+        "prev_close": 140.389999,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "ATLANTAELE_1d_max",
@@ -16108,11 +16108,11 @@ const DASHBOARD_DATA = {
         "erb": 1.210865,
         "action": "SELL 64",
         "status": "Remained",
-        "ltp": 1797.0,
-        "change_pct": -1.33,
-        "mtd_change_pct": -1.33,
-        "prev_close": 1821.300049,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1764.099976,
+        "change_pct": -1.83,
+        "mtd_change_pct": -3.14,
+        "prev_close": 1797.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CUPID_1d_max",
@@ -16123,11 +16123,11 @@ const DASHBOARD_DATA = {
         "erb": 1.19903,
         "action": "SELL 651",
         "status": "Remained",
-        "ltp": 193.380005,
-        "change_pct": 1.37,
-        "mtd_change_pct": 1.37,
-        "prev_close": 190.759995,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 192.470001,
+        "change_pct": -0.47,
+        "mtd_change_pct": 0.9,
+        "prev_close": 193.380005,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "AVL_1d_max",
@@ -16138,11 +16138,11 @@ const DASHBOARD_DATA = {
         "erb": 1.416304,
         "action": "BUY 261",
         "status": "Remained",
-        "ltp": 646.650024,
-        "change_pct": -3.88,
-        "mtd_change_pct": -3.88,
-        "prev_close": 672.75,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 640.299988,
+        "change_pct": -0.98,
+        "mtd_change_pct": -4.82,
+        "prev_close": 646.650024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "SKYGOLD_1d_max",
@@ -16153,11 +16153,11 @@ const DASHBOARD_DATA = {
         "erb": 1.197599,
         "action": "SELL 34",
         "status": "Remained",
-        "ltp": 528.900024,
-        "change_pct": 2.9,
-        "mtd_change_pct": 2.9,
-        "prev_close": 514.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 561.299988,
+        "change_pct": 6.13,
+        "mtd_change_pct": 9.2,
+        "prev_close": 528.900024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "SHAILY_1d_max",
@@ -16168,11 +16168,11 @@ const DASHBOARD_DATA = {
         "erb": 0.842716,
         "action": "SELL 11",
         "status": "Remained",
-        "ltp": 2869.199951,
-        "change_pct": -1.55,
-        "mtd_change_pct": -1.55,
-        "prev_close": 2914.5,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 2906.5,
+        "change_pct": 1.3,
+        "mtd_change_pct": -0.27,
+        "prev_close": 2869.199951,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "JSLL_1d_max",
@@ -16183,11 +16183,11 @@ const DASHBOARD_DATA = {
         "erb": 1.266234,
         "action": "SELL 42",
         "status": "Remained",
-        "ltp": 587.799988,
-        "change_pct": 0.51,
-        "mtd_change_pct": 0.51,
-        "prev_close": 584.799988,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 580.049988,
+        "change_pct": -1.32,
+        "mtd_change_pct": -0.81,
+        "prev_close": 587.799988,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "PGIL_1d_max",
@@ -16198,11 +16198,11 @@ const DASHBOARD_DATA = {
         "erb": 0.849713,
         "action": "SELL 10",
         "status": "Remained",
-        "ltp": 2088.0,
-        "change_pct": 2.65,
-        "mtd_change_pct": 2.65,
-        "prev_close": 2034.099976,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 2078.399902,
+        "change_pct": -0.46,
+        "mtd_change_pct": 2.18,
+        "prev_close": 2088.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "APARINDS_1d_max",
@@ -16213,11 +16213,11 @@ const DASHBOARD_DATA = {
         "erb": 0.695007,
         "action": "SELL 1",
         "status": "Remained",
-        "ltp": 14598.0,
-        "change_pct": -6.99,
-        "mtd_change_pct": -6.99,
-        "prev_close": 15695.0,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 14967.0,
+        "change_pct": 2.53,
+        "mtd_change_pct": -4.64,
+        "prev_close": 14598.0,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "CHOICEIN_1d_max",
@@ -16228,11 +16228,11 @@ const DASHBOARD_DATA = {
         "erb": 0.652007,
         "action": "SELL 38",
         "status": "Remained",
-        "ltp": 763.849976,
-        "change_pct": 1.41,
-        "mtd_change_pct": 1.41,
-        "prev_close": 753.200012,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 780.450012,
+        "change_pct": 2.17,
+        "mtd_change_pct": 3.62,
+        "prev_close": 763.849976,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "AETHER_1d_max",
@@ -16243,11 +16243,11 @@ const DASHBOARD_DATA = {
         "erb": 0.83162,
         "action": "BUY 73",
         "status": "Added",
-        "ltp": 1326.900024,
-        "change_pct": -1.69,
-        "mtd_change_pct": -1.69,
-        "prev_close": 1349.699951,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 1367.300049,
+        "change_pct": 3.04,
+        "mtd_change_pct": 1.3,
+        "prev_close": 1326.900024,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "GOKULAGRO_1d_max",
@@ -16258,11 +16258,11 @@ const DASHBOARD_DATA = {
         "erb": 0.750696,
         "action": "SELL 229",
         "status": "Remained",
-        "ltp": 203.889999,
-        "change_pct": -2.61,
-        "mtd_change_pct": -2.61,
-        "prev_close": 209.360001,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 209.809998,
+        "change_pct": 2.9,
+        "mtd_change_pct": 0.21,
+        "prev_close": 203.889999,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "LENSKART_1d_max",
@@ -16273,11 +16273,11 @@ const DASHBOARD_DATA = {
         "erb": 0.656879,
         "action": "SELL 667",
         "status": "Remained",
-        "ltp": 530.549988,
-        "change_pct": 3.03,
-        "mtd_change_pct": 3.03,
-        "prev_close": 514.950012,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 529.650024,
+        "change_pct": -0.17,
+        "mtd_change_pct": 2.85,
+        "prev_close": 530.549988,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "TARIL_1d_max",
@@ -16288,11 +16288,11 @@ const DASHBOARD_DATA = {
         "erb": 0.738945,
         "action": "SELL 104",
         "status": "Remained",
-        "ltp": 358.950012,
-        "change_pct": 2.16,
-        "mtd_change_pct": 2.16,
-        "prev_close": 351.350006,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 358.899994,
+        "change_pct": -0.01,
+        "mtd_change_pct": 2.15,
+        "prev_close": 358.950012,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "BSE_1d_max",
@@ -16303,11 +16303,11 @@ const DASHBOARD_DATA = {
         "erb": 0.651807,
         "action": "SELL 8",
         "status": "Remained",
-        "ltp": 3944.100098,
-        "change_pct": 2.03,
-        "mtd_change_pct": 2.03,
-        "prev_close": 3865.600098,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 3873.100098,
+        "change_pct": -1.8,
+        "mtd_change_pct": 0.19,
+        "prev_close": 3944.100098,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "TI_1d_max",
@@ -16318,11 +16318,11 @@ const DASHBOARD_DATA = {
         "erb": 0.645822,
         "action": "SELL 57",
         "status": "Remained",
-        "ltp": 453.200012,
-        "change_pct": 1.03,
-        "mtd_change_pct": 1.03,
-        "prev_close": 448.600006,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 455.149994,
+        "change_pct": 0.43,
+        "mtd_change_pct": 1.46,
+        "prev_close": 453.200012,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "DIACABS_1d_max",
@@ -16333,11 +16333,11 @@ const DASHBOARD_DATA = {
         "erb": 0.64812,
         "action": "SELL 112",
         "status": "Remained",
-        "ltp": 208.729996,
-        "change_pct": 0.6,
-        "mtd_change_pct": 0.6,
-        "prev_close": 207.490005,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 210.619995,
+        "change_pct": 0.91,
+        "mtd_change_pct": 1.51,
+        "prev_close": 208.729996,
+        "date": "2026-07-02 00:00:00"
       },
       {
         "symbol": "PGEL_1d_max",
@@ -16348,11 +16348,11 @@ const DASHBOARD_DATA = {
         "erb": 0.622452,
         "action": "SELL 18",
         "status": "Remained",
-        "ltp": 550.799988,
-        "change_pct": 3.26,
-        "mtd_change_pct": 3.26,
-        "prev_close": 533.400024,
-        "date": "2026-07-01 00:00:00"
+        "ltp": 563.450012,
+        "change_pct": 2.3,
+        "mtd_change_pct": 5.63,
+        "prev_close": 550.799988,
+        "date": "2026-07-02 00:00:00"
       }
     ],
     "exec_history": [
@@ -17389,13 +17389,13 @@ const DASHBOARD_DATA = {
     },
     "total_months": 79,
     "live_performance": {
-      "portfolio_ret": -0.37,
-      "benchmark_ret": 0.5,
-      "alpha": -0.87,
-      "portfolio_mtd": -0.37,
-      "benchmark_mtd": 0.5,
-      "alpha_mtd": -0.87,
-      "indicator": "down"
+      "portfolio_ret": 0.05,
+      "benchmark_ret": 0.56,
+      "alpha": -0.51,
+      "portfolio_mtd": -0.31,
+      "benchmark_mtd": 1.07,
+      "alpha_mtd": -1.38,
+      "indicator": "up"
     }
   },
   "sector_map": {
@@ -18163,5 +18163,5 @@ const DASHBOARD_DATA = {
     "YATHARTH": "Healthcare",
     "ZAGGLE": "Information Technology"
   },
-  "last_update": "2026-07-02 13:24:04 IST"
+  "last_update": "2026-07-03 16:28:49 IST"
 };
