@@ -1012,10 +1012,12 @@ function renderLayers(d) {
   // Table
   // Ex-Ante Sharpe from exec_summary
   const exAnte = d.exec_summary?.['Avg Ex-Ante Sharpe'] || {};
+  const exSortino = d.exec_summary?.['Avg Ex-Ante Sortino'] || {};
   document.getElementById('layerTableBody').innerHTML = layers.map(l => {
     const m = d.layer_metrics[l];
     if (!m) return '';
     const ea = exAnte[l] != null ? exAnte[l].toFixed(2) : '—';
+    const eso = exSortino[l] != null ? exSortino[l].toFixed(2) : '—';
     const isBench = isBenchKey(l);
     
     // For Benchmark, Alpha is not applicable (it is the benchmark itself)
@@ -1026,7 +1028,7 @@ function renderLayers(d) {
       <td><span class="ltag ${LAYERS[l].cls}">${LAYERS[l].label}</span></td>
       <td class="mono ${m.CAGR>=0?'text-emerald':'text-rose'}" style="font-weight:700">${m.CAGR.toFixed(2)}%</td>
       <td class="mono">${ea}</td>
-      <td class="mono">${m.Sortino != null ? m.Sortino.toFixed(2) : '—'}</td>
+      <td class="mono">${eso}</td>
       <td class="mono">${m.Calmar.toFixed(2)}</td>
       <td class="mono text-rose" style="font-weight:700">${m.Max_DD.toFixed(2)}%</td>
       <td class="mono" ${m.Recovery_Ongoing ? 'title="still under water — months since the drawdown low; not yet recovered to the prior peak"' : ''}>${m.Recovery_Months != null ? m.Recovery_Months + ' mo' + (m.Recovery_Ongoing ? '+' : '') : '—'}</td>
