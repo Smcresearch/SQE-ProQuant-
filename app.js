@@ -1363,14 +1363,27 @@ function recalcChangesInvest() {
     h.curQty = qtyAt(h.w, h.p);
     h.cost = h.curQty != null ? h.curQty * h.p : 0;
     if (h.isNew || h.prevW == null || h.prevP == null) {
-      h.change = h.curQty;   // a brand-new position: buy the whole thing
-      h.ind = { icon: '🔥', label: 'New', color: '#22d3ee', rank: 0 };
+      // Brand-new position (not in last month's portfolio)
+      if (h.p == null) {
+        // No live price: can't compute qty — treat as hold/unknown
+        h.change = null;
+        h.ind = { icon: '↔', label: 'Hold (no price)', color: '#94a3b8', rank: 3 };
+      } else {
+        h.change = h.curQty;   // genuinely new: buy the whole thing
+        h.ind = { icon: '🔥', label: 'New holding', color: '#22d3ee', rank: 0 };
+      }
     } else {
-      const prevQty = qtyAt(h.prevW, h.prevP) || 0;
-      h.change = (h.curQty || 0) - prevQty;
-      if (h.change > 0)      h.ind = { icon: '▲', label: 'Increased', color: '#10b981', rank: 1 };
-      else if (h.change < 0) h.ind = { icon: '▼', label: 'Decreased', color: '#f43f5e', rank: 2 };
-      else                   h.ind = { icon: '↔', label: 'No change', color: '#94a3b8', rank: 3 };
+      if (h.p == null) {
+        // Existing position but current price unavailable — cannot compute delta
+        h.change = null;
+        h.ind = { icon: '↔', label: 'Hold (no price)', color: '#94a3b8', rank: 3 };
+      } else {
+        const prevQty = qtyAt(h.prevW, h.prevP) || 0;
+        h.change = (h.curQty || 0) - prevQty;
+        if (h.change > 0)      h.ind = { icon: '▲', label: 'Increased', color: '#10b981', rank: 1 };
+        else if (h.change < 0) h.ind = { icon: '▼', label: 'Decreased', color: '#f43f5e', rank: 2 };
+        else                   h.ind = { icon: '↔', label: 'No change',  color: '#94a3b8', rank: 3 };
+      }
     }
   });
   holds.sort((a, b) => a.ind.rank - b.ind.rank || (b.w || 0) - (a.w || 0));
@@ -1379,15 +1392,19 @@ function recalcChangesInvest() {
   document.getElementById('tradesBody').innerHTML = holds.map(h => {
     if (h.curQty != null) invested += h.cost;
     const chg = h.change;
-    const chgTxt = h.ind.rank === 0
-      ? 'NEW +' + (chg || 0)
-      : (chg > 0 ? '+' + chg : (chg < 0 ? String(chg) : '0'));
+    const chgTxt = chg == null
+      ? '—'
+      : (h.ind.rank === 0
+          ? 'NEW +' + chg
+          : (chg > 0 ? '+' + chg : (chg < 0 ? String(chg) : '0')));
+    const prevPriceTxt = h.prevP != null ? '₹' + h.prevP.toLocaleString('en-IN') : '—';
     return `<tr>
       <td title="${h.ind.label}" style="text-align:center;font-size:.9rem;color:${h.ind.color}">${h.ind.icon}</td>
       <td class="mono" style="font-weight:700">${h.s}</td>
       <td class="text-muted" style="font-size:.7rem">${h.sec}</td>
       <td class="mono" style="font-weight:700;color:${h.ind.color}">${chgTxt}</td>
       <td class="mono">${h.w != null ? h.w + '%' : '—'}</td>
+      <td class="mono text-muted" style="font-size:.7rem">${prevPriceTxt}</td>
       <td class="mono">${h.p != null ? '₹' + h.p.toLocaleString('en-IN') : '—'}</td>
       <td class="mono text-cyan" style="font-weight:700">${h.curQty != null ? h.curQty.toLocaleString('en-IN') : '—'}</td>
       <td class="mono text-emerald">${h.curQty != null ? fmt(h.cost) : '—'}</td>
