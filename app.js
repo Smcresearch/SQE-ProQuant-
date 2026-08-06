@@ -1314,8 +1314,14 @@ function renderTrades(d) {
   // so the "Change" can be computed at the user's chosen investment amount.
   const port = (d.current_portfolio || []).filter(s => s.clean_symbol && s.clean_symbol !== 'Stock');
   const snap = H();
-  const liveMonth = String((port.find(s => s.date) || {}).date || DASHBOARD_DATA.last_update || '').slice(0, 7);
-  const prevMonths = Object.keys(snap).sort().filter(m => !liveMonth || m < liveMonth);
+  // Use today's actual calendar month as the "current" reference so that the
+  // most-recent MONTHLY_HOLDINGS snapshot (e.g. 2026-07) is treated as
+  // "last month". Stock CSV dates end at month-close (e.g. 2026-07-01), so
+  // using the stock date directly would exclude the July snapshot and
+  // incorrectly compare against June, making most holdings appear as new/changed.
+  const now = new Date();
+  const liveMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const prevMonths = Object.keys(snap).sort().filter(m => m < liveMonth);
   const prevHolds = prevMonths.length ? snap[prevMonths[prevMonths.length - 1]] : [];
   const prevBy = {};
   prevHolds.forEach(x => { prevBy[x.s] = x; });
