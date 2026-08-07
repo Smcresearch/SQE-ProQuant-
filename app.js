@@ -1326,18 +1326,40 @@ function renderTrades(d) {
   const prevBy = {};
   prevHolds.forEach(x => { prevBy[x.s] = x; });
 
-  window.__chgHolds = port.map(s => {
-    const prev = prevBy[s.clean_symbol];
-    return {
-      s: s.clean_symbol,
-      sec: s.sector || '—',
-      w: s.weight != null ? +(s.weight * 100).toFixed(2) : null,
-      p: (s.ltp != null && s.ltp > 0) ? +(+s.ltp).toFixed(2) : null,
-      prevW: prev ? prev.w : null,
-      prevP: (prev && prev.p > 0) ? prev.p : null,
-      isNew: !prev
-    };
+  const portSymbols = new Set(port.map(s => s.clean_symbol));
+  const soldHolds = [];
+  prevHolds.forEach(prev => {
+    if (!portSymbols.has(prev.s)) {
+      const sec = prev.sec || d.sector_map?.[prev.s] || '—';
+      soldHolds.push({
+        s: prev.s,
+        sec: sec,
+        w: 0,
+        p: null,
+        prevW: prev.w,
+        prevP: prev.p,
+        isNew: false,
+        isSold: true
+      });
+    }
   });
+
+  window.__chgHolds = [
+    ...port.map(s => {
+      const prev = prevBy[s.clean_symbol];
+      return {
+        s: s.clean_symbol,
+        sec: s.sector || '—',
+        w: s.weight != null ? +(s.weight * 100).toFixed(2) : null,
+        p: (s.ltp != null && s.ltp > 0) ? +(+s.ltp).toFixed(2) : null,
+        prevW: prev ? prev.w : null,
+        prevP: (prev && prev.p > 0) ? prev.p : null,
+        isNew: !prev,
+        isSold: false
+      };
+    }),
+    ...soldHolds
+  ];
 
   const ca = document.getElementById('cinv-amt');
   if (ca) ca.value = sharedInvestAmount;   // reflect the shared amount
@@ -1360,29 +1382,37 @@ function recalcChangesInvest() {
   const qtyAt = (w, p) => (p > 0 && w != null) ? Math.max(1, Math.floor((total * (w / 100)) / p)) : null;
 
   holds.forEach(h => {
-    h.curQty = qtyAt(h.w, h.p);
-    h.cost = h.curQty != null ? h.curQty * h.p : 0;
-    if (h.isNew || h.prevW == null || h.prevP == null) {
-      // Brand-new position (not in last month's portfolio)
-      if (h.p == null) {
-        // No live price: can't compute qty — treat as hold/unknown
-        h.change = null;
-        h.ind = { icon: '↔', label: 'Hold (no price)', color: '#94a3b8', rank: 3 };
-      } else {
-        h.change = h.curQty;   // genuinely new: buy the whole thing
-        h.ind = { icon: '🔥', label: 'New holding', color: '#22d3ee', rank: 0 };
-      }
+    if (h.isSold) {
+      const prevQty = qtyAt(h.prevW, h.prevP) || 0;
+      h.curQty = 0;
+      h.cost = 0;
+      h.change = -prevQty;
+      h.ind = { icon: '▼', label: 'Sold / Exited', color: '#f43f5e', rank: 2 };
     } else {
-      if (h.p == null) {
-        // Existing position but current price unavailable — cannot compute delta
-        h.change = null;
-        h.ind = { icon: '↔', label: 'Hold (no price)', color: '#94a3b8', rank: 3 };
+      h.curQty = qtyAt(h.w, h.p);
+      h.cost = h.curQty != null ? h.curQty * h.p : 0;
+      if (h.isNew) {
+        // Brand-new position (not in last month's portfolio)
+        if (h.p == null) {
+          // No live price: can't compute qty — treat as hold/unknown
+          h.change = null;
+          h.ind = { icon: '↔', label: 'Hold (no price)', color: '#94a3b8', rank: 3 };
+        } else {
+          h.change = h.curQty;   // genuinely new: buy the whole thing
+          h.ind = { icon: '🔥', label: 'New holding', color: '#22d3ee', rank: 0 };
+        }
       } else {
-        const prevQty = qtyAt(h.prevW, h.prevP) || 0;
-        h.change = (h.curQty || 0) - prevQty;
-        if (h.change > 0)      h.ind = { icon: '▲', label: 'Increased', color: '#10b981', rank: 1 };
-        else if (h.change < 0) h.ind = { icon: '▼', label: 'Decreased', color: '#f43f5e', rank: 2 };
-        else                   h.ind = { icon: '↔', label: 'No change',  color: '#94a3b8', rank: 3 };
+        if (h.p == null || h.prevP == null || h.prevW == null) {
+          // Price/weight missing: can't compute delta — treat as hold/unknown
+          h.change = null;
+          h.ind = { icon: '↔', label: 'Hold (no price)', color: '#94a3b8', rank: 3 };
+        } else {
+          const prevQty = qtyAt(h.prevW, h.prevP) || 0;
+          h.change = (h.curQty || 0) - prevQty;
+          if (h.change > 0)      h.ind = { icon: '▲', label: 'Increased', color: '#10b981', rank: 1 };
+          else if (h.change < 0) h.ind = { icon: '▼', label: 'Decreased', color: '#f43f5e', rank: 2 };
+          else                   h.ind = { icon: '↔', label: 'No change',  color: '#94a3b8', rank: 3 };
+        }
       }
     }
   });
