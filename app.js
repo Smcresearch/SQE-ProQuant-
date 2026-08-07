@@ -428,7 +428,7 @@ function openHeatModal(monthStr) {
   const liveMonth = d.monthly_detail.length ? String(d.monthly_detail[d.monthly_detail.length - 1].Month).slice(0, 7) : '';
   const isLive = monthStr === liveMonth;
 
-  document.getElementById('modal-month').textContent = monthStr + (isLive ? '  ·  LIVE (not yet traded)' : '');
+  document.getElementById('modal-month').textContent = monthStr + (isLive ? '  ·  LIVE' : '');
   const benchVal = (isLive || row.Bench == null) ? null : +(row.Bench * 100).toFixed(2);
 
   // Benchmark return for the same month from BOTH indices, regardless of universe
