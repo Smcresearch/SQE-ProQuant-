@@ -248,6 +248,28 @@ body::before {
 
 .header-left { display: flex; align-items: center; gap: 1.25rem; }
 
+/* SMC lockup. The wordmark is near-black on an opaque white background, so on
+   the dark theme it sits on a white chip the asset blends into; in light mode
+   the chip is redundant and disappears. */
+.brand-logo-chip {
+  background: #fff;
+  border-radius: .75rem;
+  padding: .5rem .8rem;
+  display: flex; align-items: center;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, .3);
+  flex-shrink: 0;
+}
+.brand-logo-chip img {
+  display: block;
+  height: 46px; width: auto; max-width: 190px;
+}
+:root[data-theme="light"] .brand-logo-chip {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .08);
+}
+@media (max-width: 640px) {
+  .brand-logo-chip img { height: 36px; max-width: 150px; }
+}
+
 .brand-badge {
   width: 52px; height: 52px;
   background: linear-gradient(135deg, var(--cyan), var(--violet));

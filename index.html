@@ -32,7 +32,14 @@
     <!-- HEADER -->
     <header class="site-header">
       <div class="header-left">
-        <div class="brand-badge">SQE</div>
+        <!-- If the logo file is missing the SQE badge takes over, so the
+             header never renders broken. -->
+        <div class="brand-logo-chip" id="brand-logo-chip">
+          <img id="brand-logo" src="smc_logo.webp" alt="SMC — moneywise. be wise."
+               onerror="document.getElementById('brand-logo-chip').style.display='none';
+                        document.getElementById('brand-fallback').style.display='flex';">
+        </div>
+        <div class="brand-badge" id="brand-fallback" style="display:none">SQE</div>
         <div>
           <h1 class="brand-title">SQE ProQuant <span style="font-size:0.7rem; vertical-align:middle; opacity:0.6">Nifty 500</span> <span style="font-size:0.6rem; vertical-align:middle; opacity:0.5">v1.1.2</span></h1>
           <p id="last-refresh" class="brand-sub mono"></p>
