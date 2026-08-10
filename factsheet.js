@@ -90,7 +90,9 @@
   /* ── DATA ─────────────────────────────────────────────────────────────
      Everything the factsheet prints, pulled from the live dashboard state. */
   function collect() {
-    var root = window.DASHBOARD_DATA;
+    /* data.js declares `const DASHBOARD_DATA`, which is a script-scope lexical
+       binding — it is reachable from this file but never lands on `window`. */
+    var root = (typeof DASHBOARD_DATA !== 'undefined') ? DASHBOARD_DATA : null;
     if (!root) return null;
 
     var uKey = (typeof state !== 'undefined' && state && state.universe) || 'nifty500';
