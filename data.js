@@ -19119,5 +19119,5 @@ const DASHBOARD_DATA = {
     "YATHARTH": "Healthcare",
     "ZAGGLE": "Information Technology"
   },
-  "last_update": "2026-08-22 17:39:53 IST"
+  "last_update": "2026-08-23 17:39:54 IST"
 };
