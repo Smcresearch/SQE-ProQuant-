@@ -55,6 +55,23 @@ BENCHMARK_FILE   = os.environ.get("BENCHMARK_FILE", "NIFTY500_1d.csv")  # Benchm
 ELIGIBILITY_FILE = os.environ.get(
     "ELIGIBILITY_FILE", r"D:\Live_share\web_scrap\data\quarterly_eligibility.csv")
 
+# Fixed bullion sleeve (same pattern as som_metals.py, used by the
+# SQE-MultiAsset-ProQuant site): GOLDBEES/SILVERBEES get a FIXED weight each,
+# the stock sleeve shrinks proportionally so the two always sum to 1.0. They
+# never enter the EGP ranking (see build_metal_row) -- they're injected after
+# selection, not competed for.
+GOLD_WEIGHT      = float(os.environ.get("GOLD_WEIGHT", "0.10"))
+SILVER_WEIGHT    = float(os.environ.get("SILVER_WEIGHT", "0.10"))
+METALS_WEIGHT    = GOLD_WEIGHT + SILVER_WEIGHT
+STOCK_SLEEVE     = 1.0 - METALS_WEIGHT
+GOLD_FILE        = "NSE_GOLDBEES, 1D.csv"
+SILVER_FILE      = "NSE_SILVERBEES, 1D.csv"
+GOLD_SYMBOL      = "GOLDBEES"
+SILVER_SYMBOL    = "SILVERBEES"
+METAL_TARGETS = {}
+if GOLD_WEIGHT   > 0: METAL_TARGETS[GOLD_SYMBOL]   = GOLD_WEIGHT
+if SILVER_WEIGHT > 0: METAL_TARGETS[SILVER_SYMBOL] = SILVER_WEIGHT
+
 # Output files
 OUTPUT_FILE      = os.environ.get("OUTPUT_FILE", "SOM_HQ_Quarterly_v2.xlsx")  # Main comprehensive report
 SUMMARY_ONLY_FILE = os.environ.get("SUMMARY_ONLY_FILE", "SOM_HQ_Quarterly_v2_Summary.xlsx")  # Summary-only report
@@ -283,6 +300,25 @@ for file in stock_files:
         print(f"  [x]  {name:25s}  ERROR: {e}")
 
 print(f"\n[v] Successfully loaded {len(all_stocks)} stocks")
+
+# Load the bullion sleeve (GOLDBEES/SILVERBEES) into the SAME dicts the
+# stock universe uses -- they ride the identical beta/return machinery, but
+# never enter the EGP ranking loop below since they're excluded by the
+# fundamental-screen eligibility filter (never in month_eligible), and get
+# injected back in afterward at their fixed target weight (see METAL_TARGETS).
+for _sym, _file in ((GOLD_SYMBOL, GOLD_FILE), (SILVER_SYMBOL, SILVER_FILE)):
+    if _sym not in METAL_TARGETS:
+        continue
+    try:
+        _daily = read_daily_csv(_file)
+        all_stocks[_sym] = resample_to_monthly(_daily)
+        all_stocks_daily[_sym] = (_daily.dropna(subset=['time'])
+                                        .drop_duplicates(subset=['time'], keep='last')
+                                        .set_index('time')
+                                        .sort_index())
+        print(f"  [v]  {_sym:25s}  {len(all_stocks[_sym]):4d} months  (bullion sleeve, target {METAL_TARGETS[_sym]:.0%})")
+    except Exception as e:
+        sys.exit(f"❌  Could not load bullion sleeve file '{_file}' for {_sym}: {e}")
 if load_errors:
     print(f"[!] {len(load_errors)} files failed to load")
 
@@ -319,6 +355,85 @@ churn_records = []
 # Full EGP tables and correlation matrices (Script 2)
 full_egp_tables = {}
 full_correlation_matrices = {}
+
+
+def build_metal_row(symbol, port_month, trade_month, risk_free_rate,
+                     bench_window, bench_daily_idx, weight):
+    """Fixed-weight bullion row -- same beta/residual-variance/expected-return
+    maths as a stock (so portfolio beta & ex-ante risk stay consistent), but
+    never rejected on beta<=0 (gold/silver legitimately run near-zero or
+    negative beta vs Nifty 500 -- that's the diversification being paid for).
+    Returns None if the metal has no usable price history yet as of
+    port_month (e.g. silver before its 2022-05-10 inception). Ported from
+    som_metals.py (SQE-MultiAsset-ProQuant's engine) unchanged."""
+    m_monthly = all_stocks[symbol]
+    hist = m_monthly[m_monthly.index <= port_month]
+    if hist.empty:
+        return None
+
+    window = hist.tail(min(BETA_WINDOW, len(hist)))
+    common = window.index.intersection(bench_window.index)
+
+    if len(common) >= MIN_OBS:
+        r_asset = window.loc[common, 'return'].values
+        r_mkt = bench_window.loc[common, 'return'].values
+        ann_factor, obs = 12, len(common)
+    else:
+        d = all_stocks_daily.get(symbol, pd.DataFrame())
+        if d.empty:
+            return None
+        d_hist = d[d.index <= port_month.to_timestamp(how='end')]
+        if len(d_hist) < 5:
+            return None
+        s_ret = d_hist['close'].pct_change().dropna()
+        m_ret = bench_daily_idx['return'].reindex(s_ret.index).dropna()
+        idx = s_ret.index.intersection(m_ret.index)
+        if len(idx) < 5:
+            return None
+        r_asset = s_ret.loc[idx].values
+        r_mkt = m_ret.loc[idx].values
+        ann_factor, obs = 252, len(idx)
+
+    cov = np.cov(r_asset, r_mkt, ddof=1)
+    mkt_var = cov[1, 1]
+    beta = cov[0, 1] / mkt_var if mkt_var > EPSILON else 0.0
+    if pd.isna(beta):
+        beta = 0.0
+
+    alpha = r_asset.mean() - beta * r_mkt.mean()
+    resid = r_asset - (alpha + beta * r_mkt)
+    sigma2 = float(np.var(resid, ddof=1) * ann_factor)
+    if pd.isna(sigma2) or sigma2 < EPSILON:
+        sigma2 = EPSILON
+    annual_ret = float(r_asset.mean() * ann_factor)
+
+    if trade_month in m_monthly.index:
+        trow = m_monthly.loc[trade_month]
+        buy_price = trow.get('open', np.nan)
+        sell_price = trow.get('close', np.nan)
+        if pd.isna(buy_price) or buy_price <= 0:
+            buy_price = hist['close'].iloc[-1]
+        if pd.isna(sell_price):
+            sell_price = buy_price
+        trade_data_exists = True
+    else:
+        buy_price = hist['close'].iloc[-1]
+        sell_price = buy_price
+        trade_data_exists = False
+
+    if pd.isna(buy_price) or buy_price <= 0:
+        return None
+
+    erb = (annual_ret - risk_free_rate) / beta if abs(beta) > 1e-4 else np.nan
+
+    return {
+        'symbol': symbol, 'beta': beta, 'annual_ret': annual_ret, 'sigma2': sigma2,
+        'erb': erb, 'n_obs': obs, 'buy_price': float(buy_price), 'sell_price': float(sell_price),
+        'trade_data_exists': trade_data_exists,
+        'A': np.nan, 'H': np.nan, 'cum_A': np.nan, 'cum_H': np.nan, 'Ci': np.nan,
+        'Zi': np.nan, 'wi_raw': weight, 'wi': weight, 'is_metal': True,
+    }
+
 
 for port_month in all_port_months:
     trade_month = port_month + 1
@@ -515,7 +630,29 @@ for port_month in all_port_months:
     
     sel['wi_raw'] = sel['Zi'] / Z_sum
     sel['wi'] = cap_weights_iterative(sel['wi_raw'].values, MAX_WEIGHT)
-    
+    sel['is_metal'] = False
+
+    # ──────────────────────────────────────────────────────────────────────
+    # 🥇 FIXED BULLION SLEEVE (GOLDBEES/SILVERBEES) -- ported from som_metals.py
+    # ──────────────────────────────────────────────────────────────────────
+    # Cap first, THEN scale: MAX_WEIGHT is enforced inside the stock sleeve,
+    # so a capped stock is MAX_WEIGHT of the sleeve, not of total capital.
+    metal_rows = []
+    for _msym, _mw in METAL_TARGETS.items():
+        _row = build_metal_row(_msym, port_month, trade_month, risk_free_rate,
+                               bench_window, bench_daily_idx, _mw)
+        if _row is not None:
+            metal_rows.append(_row)
+
+    # A metal with no data yet (e.g. silver pre-2022-05) is held as CASH
+    # rather than handed to stocks, so the stock sleeve stays its configured
+    # size and runs stay comparable across months.
+    funded_metal_weight = sum(r['wi'] for r in metal_rows)
+    sel['wi'] = sel['wi'] * STOCK_SLEEVE
+    if metal_rows:
+        sel = pd.concat([sel, pd.DataFrame(metal_rows)], ignore_index=True)
+    cash_weight = METALS_WEIGHT - funded_metal_weight
+
     # Calculate quantities
     sel['allocation'] = INVESTMENT * sel['wi']
     # Proportional (ideal) size, then the MIN_QTY floor. With MIN_QTY = 0 this is
