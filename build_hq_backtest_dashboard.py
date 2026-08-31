@@ -90,7 +90,9 @@ DISCLAIMER = (
     "financials + price history for locally (Screener.in free-tier universe), "
     "not the full listed market. Actual full-market returns may vary from "
     "what's shown here. Current & previous portfolio holdings below remain "
-    "the real executed book."
+    "the real executed book. Local daily price data currently runs through "
+    "~mid-2026; the most recent 1-2 months are not yet shown as realized "
+    "returns pending a price-data refresh."
 )
 
 
@@ -189,30 +191,42 @@ def load_som_months():
 
     # Trailing months with Base == exactly 0.0 are SOM's "Future Selection
     # Mode" placeholders (trade month's price data isn't in yet -- basket
-    # formed, nothing realized), not genuine flat months. Drop them so
-    # metrics/heatmap only ever show realized returns.
-    while months and months[-1]["Base"] == 0.0:
-        months.pop()
-    return months
+    # formed, nothing realized). Keep AT MOST ONE such row at the tail --
+    # the frontend heatmap (app.js renderHeatmap) always renders the LAST
+    # monthly_detail row as a "live, not yet traded" marker dot rather than
+    # a colored return; dropping every placeholder would instead swallow
+    # the last genuinely-realized month under that same marker. Any
+    # placeholders beyond the first are further future and just dropped.
+    first_placeholder = next((i for i, m in enumerate(months) if m["Base"] == 0.0
+                               and all(mm["Base"] == 0.0 for mm in months[i:])), len(months))
+    return months[:first_placeholder + 1]
 
 
 def main():
     months = load_som_months()
+    # The last row may be a still-forming "live" placeholder (Base==0.0, no
+    # trade data yet) kept only so the heatmap renders its usual dot marker
+    # instead of a colored cell -- exclude it from all statistics, same as
+    # the real-portfolio pipeline already does for its own live month.
+    is_live = bool(months) and months[-1]["Base"] == 0.0 and len(months) > 1
+    realized = months[:-1] if is_live else months
 
-    base = [m["Base"] for m in months]
-    bench = [m["Bench"] for m in months]
+    base = [m["Base"] for m in realized]
+    bench = [m["Bench"] for m in realized]
 
     lm_base = compute_metrics(base, bench)
     lm_bench = compute_metrics(bench, bench)
     lm_bench["Alpha"] = 0.0
 
     eq_base, eq_bench, cb, cn = [], [], 1.0, 1.0
-    for m in months:
+    for m in months:  # include the live row so the equity chart still plots through it (flat, as-is)
         cb *= (1 + m["Base"]); cn *= (1 + m["Bench"])
         eq_base.append(round(cb, 4)); eq_bench.append(round(cn, 4))
 
     em_base, em_bench = adv_metrics(base, bench), adv_metrics(bench, bench)
     exec_summary = {k: {"Base": em_base[k], "Bench": em_bench[k]} for k in em_base}
+
+    avg_ex_ante_sr = round(sum(m["Ex_Ante_Sharpe"] for m in realized) / len(realized), 4) if realized else 0.0
 
     # Preserve the REAL data untouched: current_portfolio, exec_history,
     # stock_correlation, live_performance, and the per-month holdings shown
@@ -247,7 +261,7 @@ def main():
 
     universe = {
         "exec_summary": exec_summary,
-        "avg_ex_ante_sr": 0.0,
+        "avg_ex_ante_sr": avg_ex_ante_sr,
         "layer_metrics": {"Base": lm_base, "Bench": lm_bench},
         "equity_curves": {"months": [m["Month"] for m in months], "Base": eq_base, "Bench": eq_bench},
         "churning_data": [{"Month": m["Month"], "Stock_Count": m["Stock_Count"],
