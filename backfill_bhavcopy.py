@@ -118,16 +118,22 @@ def read_meta(path):
     Index (4). Detect it from the header's own 'Date' column instead of
     assuming a fixed count -- assuming 4 unconditionally silently misaligned
     every appended row for 5-static-column files (Date landed in the ISIN
-    slot, shifting OHLCV out from under the header)."""
+    slot, shifting OHLCV out from under the header).
+
+    Parsed with the csv module, NOT a plain split(','): some files carry a
+    quoted field that itself contains commas (e.g. VMARCIND's Company is
+    "VMARCIND.NS,0P0001M1FR,196000"). A naive split saw 3 fields there,
+    shifting Date two slots left and writing every appended row short by
+    the Industry/Index columns."""
     static, dates = None, set()
-    with open(path, encoding='utf-8') as f:
-        header = f.readline().rstrip('\n').split(',')
+    with open(path, newline='', encoding='utf-8', errors='ignore') as f:
+        r = csv.reader(f)
+        header = next(r, [])
         try:
             date_idx = [h.strip().lower() for h in header].index('date')
         except ValueError:
             date_idx = 4  # no recognizable header -- fall back to the old assumption
-        for line in f:
-            p = line.rstrip('\n').split(',')
+        for p in r:
             if len(p) <= date_idx:
                 continue
             if static is None:
@@ -177,9 +183,12 @@ def main():
             row = book.get(SYMBOL_MAP.get(st['sym'], st['sym']))
             if not row:
                 continue
-            st['new'].append(','.join(st['static'] + [
+            # Kept as a LIST and written via csv.writer below -- ','.join()
+            # would emit an unquoted, broken row whenever a static field
+            # itself contains a comma (see read_meta).
+            st['new'].append(st['static'] + [
                 ds, row['OpnPric'], row['HghPric'], row['LwPric'], row['ClsPric'],
-                str(int(float(row['TtlTradgVol'] or 0))), '0.0', '0.0']))
+                str(int(float(row['TtlTradgVol'] or 0))), '0.0', '0.0'])
             st['dates'].add(ds)
         day += timedelta(days=1)
 
@@ -190,9 +199,9 @@ def main():
             continue
         if not DRY_RUN:
             with open(os.path.join(TARGET_DIR, fn), 'a', encoding='utf-8', newline='') as f:
-                f.write('\n'.join(st['new']) + '\n')
-        first = st['new'][0].split(',')[st['date_idx']]
-        last = st['new'][-1].split(',')[st['date_idx']]
+                csv.writer(f, lineterminator='\n').writerows(st['new'])
+        first = st['new'][0][st['date_idx']]
+        last = st['new'][-1][st['date_idx']]
         print(f'  {st["sym"]:<16} +{len(st["new"]):>4} rows  {first} -> {last}')
         total += len(st['new'])
 

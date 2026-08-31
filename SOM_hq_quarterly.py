@@ -282,7 +282,14 @@ all_stocks_daily = {}
 load_errors = []
 
 for file in stock_files:
+    # Strip the "_1d_max" filename suffix so the symbol carried through every
+    # downstream consumer (Excel PM sheets, holdings.json, the site's sector
+    # map, the eligibility filter) is the real ticker. Leaving it on made
+    # every HQ holding fail its sector lookup -- "NATIONALUM_1d_max" never
+    # matches "NATIONALUM" -- so the whole book showed Other / Unclassified.
     name = Path(file).stem
+    if name.endswith('_1d_max'):
+        name = name[:-len('_1d_max')]
     try:
         daily = read_daily_csv(os.path.join(STOCKS_FOLDER, file))
         monthly = resample_to_monthly(daily)
@@ -472,11 +479,26 @@ for port_month in all_port_months:
         # Only stocks that passed the fundamental screen for THIS month are
         # selectable -- full price history is still used below for beta/ERB,
         # this only restricts which names may enter the ranking at all.
-        # `symbol` carries the "_1d_max" filename suffix (existing SOM.py
-        # convention -- Path(file).stem doesn't strip it); eligibility.csv
-        # tickers don't, so strip it only for this comparison.
-        if symbol.replace("_1d_max", "") not in month_eligible:
+        if symbol not in month_eligible:
             continue
+
+        # Delisting / suspension guard. The benchmark trades every month, so
+        # if IT has data for the trade month but this stock does not, the
+        # stock is not actually tradeable then (delisted, merged, or
+        # suspended for the full month) -- e.g. CIGNITITEC merged into
+        # COFORGE and stopped trading after 14-May-2026. Without this it
+        # stays selectable forever, gets marked at its last-ever close
+        # (buy == sell), and books a fake 0% return while occupying real
+        # weight. When the benchmark ALSO lacks the trade month we are in
+        # genuine future-selection mode (no month has traded yet), which is
+        # legitimate and must not be filtered.
+        # resample('ME') still emits an index entry for a month a stock did
+        # not trade at all, just with NaN OHLC, so membership alone is not
+        # enough -- the open must be a real number (CARERATING/SJS, May'26).
+        if trade_month in bench_monthly.index:
+            _tr = stock_monthly.loc[trade_month] if trade_month in stock_monthly.index else None
+            if _tr is None or pd.isna(_tr.get('open')) or not (_tr.get('open') > 0):
+                continue
 
         # Get historical data up to portfolio month
         stock_hist = stock_monthly[stock_monthly.index <= port_month]
