@@ -658,16 +658,23 @@ for port_month in all_port_months:
     exit_value_removed = 0.0 # for txn cost
     for sym in removed_list:
         if sym in port_state:
-            if trade_month in all_stocks[sym].index:
+            exit_price = (all_stocks[sym].loc[trade_month, 'open']
+                          if trade_month in all_stocks[sym].index else None)
+            if exit_price is not None and pd.notna(exit_price):
                 # Removed at the OPEN of trade month
-                exit_price = all_stocks[sym].loc[trade_month, 'open']
                 p_close = port_state[sym]['last_close']
                 p_avg = port_state[sym]['avg_price']
                 p_qty = port_state[sym]['qty']
                 current_removed_pnl += (exit_price - p_close) * p_qty
                 exit_value_removed += p_qty * exit_price
             else:
-                # Future Selection Mode: No PNL yet
+                # No real trade data for this exit month -- either it hasn't
+                # happened yet, or (e.g. TALBROAUTO/NDRAUTO in May'26) the
+                # stock has a full-month trading gap: resample('ME') still
+                # emits an index entry for that month, just with NaN OHLC,
+                # so `trade_month in index` alone doesn't catch it. Skip
+                # this stock's contribution rather than let one NaN poison
+                # the whole month's PnL.
                 pass
     
     sel['removed_pnl'] = current_removed_pnl
@@ -694,7 +701,7 @@ for port_month in all_port_months:
     
     # Net PNL (Including removed stocks)
     monthly_net_pnl = sel['gross_pnl'].sum() + current_removed_pnl - total_txn_cost
-    
+
     # If this is a future selection (no trade data), zero out the PNL metrics
     if not sel['trade_data_exists'].iloc[0]:
         monthly_net_pnl = 0.0
