@@ -256,6 +256,12 @@ function renderBacktestPeriod(d) {
    OVERVIEW
 ══════════════════════════════════════════════ */
 function renderOverview(d) {
+  const noteEl = document.getElementById('universe-note');
+  if (noteEl) {
+    if (d.disclaimer) { noteEl.textContent = '⚠ ' + d.disclaimer; noteEl.style.display = 'block'; }
+    else { noteEl.style.display = 'none'; }
+  }
+
   const base = d.layer_metrics.Base;
   const kpis = [
     { label: 'CAGR (SQE)',       val: base.CAGR,          unit: '%', color: '#22d3ee', accent: '#22d3ee' },

@@ -83,6 +83,9 @@
     <!-- ═══════════════════════════════════════ -->
     <section id="tab-overview" class="tab-pane active">
 
+      <!-- Universe-specific disclaimer (e.g. High Quality backtest caveat). Hidden unless the active universe's data sets `disclaimer`. -->
+      <div id="universe-note" style="display:none;margin-bottom:1.25rem;padding:0.85rem 1.1rem;border-radius:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;font-size:0.8rem;line-height:1.5"></div>
+
       <!-- KPI Row -->
       <div class="kpi-grid" id="kpi-row"></div>
 
@@ -415,13 +418,13 @@
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/countup.js@2.8.0/dist/countUp.umd.js"></script>
   <!-- Data must load before app (SQE v1.0 Cache Bust) -->
-  <script src="data.js?v=1787811358"></script>
+  <script src="data.js?v=1788153993"></script>
   <script src="holdings.js?v=1787746192"></script>
-  <script src="ml_data.js?v=1787811358"></script>
-  <script src="hq_data.js?v=1787811358"></script>
-  <script src="app.js?v=1787811358"></script>
+  <script src="ml_data.js?v=1788153993"></script>
+  <script src="hq_data.js?v=1788153993"></script>
+  <script src="app.js?v=1788153993"></script>
   <!-- Must follow app.js — it overrides that file's exportReport(). -->
-  <script src="factsheet.js?v=1787811358"></script>
+  <script src="factsheet.js?v=1788153993"></script>
   <script src="live_ltp.js?v=1782887872"></script>
 </body>
 </html>
