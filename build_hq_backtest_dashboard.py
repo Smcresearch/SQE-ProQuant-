@@ -80,7 +80,7 @@ def compute_metrics(returns_series, bench_series, rf_annual=0.06):
     }
 
 
-SOM_SUMMARY_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_Summary.xlsx"  # the REAL SOM-run per-month results
+SOM_SUMMARY_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2_Summary.xlsx"  # the REAL SOM-run per-month results (v2 = Aug'26 price refresh, saved under a new name since the v1 files were open in Excel)
 HQ_DATA_JS = r"D:\Host_portfolio\hq_data.js"
 
 DISCLAIMER = (
@@ -178,13 +178,21 @@ def load_som_months():
         m = ws.cell(row=r, column=idx["Portfolio Month"]).value
         if not m or not month_re.match(str(m).strip()):
             continue  # skips blanks and the trailing "TOTAL" row
+        base_cell = ws.cell(row=r, column=idx["Port Return %"]).value
+        if base_cell is None:
+            # A genuinely blank/errored cell (seen once, unrelated to any
+            # known cause) is NOT the same as a real 0% return -- coercing
+            # it via `or 0` would silently fabricate a flat month. Skip the
+            # month entirely instead of guessing at its return.
+            print(f"[qbt-dash] WARNING: {m} has no Port Return % value (blank/error cell) -- excluded, not zeroed.")
+            continue
         months.append({
             "Month": str(m).strip(),
             "Stock_Count": int(ws.cell(row=r, column=idx["Stocks"]).value or 0),
             "Added": int(ws.cell(row=r, column=idx["Added Stocks"]).value or 0),
             "Removed": int(ws.cell(row=r, column=idx["Removed Stocks"]).value or 0),
             "Port_Beta": round(float(ws.cell(row=r, column=idx["Ex-ante Beta"]).value or 0), 4),
-            "Base": float(ws.cell(row=r, column=idx["Port Return %"]).value or 0),
+            "Base": float(base_cell),
             "Bench": float(ws.cell(row=r, column=idx["Bench Return %"]).value or 0),
             "Ex_Ante_Sharpe": round(float(ws.cell(row=r, column=idx["Ex-ante Sharpe"]).value or 0), 4),
         })
@@ -199,7 +207,19 @@ def load_som_months():
     # placeholders beyond the first are further future and just dropped.
     first_placeholder = next((i for i, m in enumerate(months) if m["Base"] == 0.0
                                and all(mm["Base"] == 0.0 for mm in months[i:])), len(months))
-    return months[:first_placeholder + 1]
+    months = months[:first_placeholder + 1]
+
+    # If the data turned out fresh enough that even the last month is fully
+    # realized (non-zero), there's no natural placeholder left -- synthesize
+    # one for the next calendar month (same basket, not yet realized) so the
+    # frontend's "last row = still forming" dot doesn't instead swallow a
+    # real, meaningful return.
+    if months and months[-1]["Base"] != 0.0:
+        last = months[-1]
+        y, mo = map(int, last["Month"].split("-"))
+        next_month = f"{y + 1:04d}-01" if mo == 12 else f"{y:04d}-{mo + 1:02d}"
+        months.append({**last, "Month": next_month, "Added": 0, "Removed": 0, "Base": 0.0, "Bench": 0.0})
+    return months
 
 
 def main():
