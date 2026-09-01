@@ -85,13 +85,19 @@ SOM_CURRENT_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2_Current.xlsx"  # the 
 HQ_DATA_JS = r"D:\Host_portfolio\hq_data.js"
 DATA_JS = r"D:\Host_portfolio\data.js"        # only for its sector_map
 
-# Holdings whose Yahoo ticker is not simply SYMBOL.NS.
-TICKER_OVERRIDE = {
-    "ADORWELD": "ADOR.NS",
-    "KLBRENG": "KLBRENG-B.NS",
-    "SELAN": "ANTELOPUS.NS",
-    "MODERNINS": "515008.BO",
-}
+# Where holdings are priced from, in order. hq_quarterly_universe is the folder
+# the SOM run itself read, so its closes are the ones the book was sized on; the
+# rest cover the bullion sleeve and anything the screen has since dropped.
+PRICE_FOLDERS = [
+    "hq_quarterly_universe",
+    r"D:\Shared folder\portfolio\High_Quality_September",
+    "TOTAL_STOCKS",
+    "nifty500_host",
+]
+# The bullion sleeve is stored under neither naming convention.
+BULLION_CSV = {"GOLDBEES": "NSE_GOLDBEES, 1D.csv",
+               "SILVERBEES": "NSE_SILVERBEES, 1D.csv"}
+BENCH_CSV = "NIFTY500_1d.csv"
 
 DISCLAIMER = (
     "Backtest, not a live track record: this High Quality screen (ROCE>18%, "
@@ -264,7 +270,7 @@ def load_current_portfolio():
     than to the 0 that breaks the calculator.
     """
     import openpyxl
-    import yfinance as yf
+    from live_prices import price_symbols
 
     wb = openpyxl.load_workbook(SOM_CURRENT_XLSX, data_only=True)
     ws = wb[wb.sheetnames[0]]
@@ -285,44 +291,29 @@ def load_current_portfolio():
                      "qty": tgt, "prev_qty": prev,
                      "weight": float(weight or 0), "book_price": float(price or 0)})
 
+    # Priced from the settled local CSVs, not yfinance: yfinance hands back a
+    # placeholder bar for a session that has not happened yet, and rebuilt just
+    # after midnight on 01-09 that made 18 of 22 holdings show a 0.00% day.
+    quotes = price_symbols([h["symbol"] for h in rows], PRICE_FOLDERS,
+                           aliases=BULLION_CSV)
     for h in rows:
-        tk = TICKER_OVERRIDE.get(h["symbol"], h["symbol"] + ".NS")
-        ltp = prev_close = mtd_base = 0.0
-        date = "N/A"
-        for cand in ([tk] if h["symbol"] in TICKER_OVERRIDE
-                     else [tk, h["symbol"] + ".BO"]):
-            try:
-                df = yf.Ticker(cand).history(period="3mo", interval="1d",
-                                             auto_adjust=True)
-            except Exception:
-                continue
-            if df is None or df.empty:
-                continue
-            closes = df["Close"].dropna()
-            if closes.empty:
-                continue
-            ltp = float(closes.iloc[-1])
-            prev_close = float(closes.iloc[-2]) if len(closes) > 1 else ltp
-            month = closes.index[-1].month
-            before = closes[closes.index.month != month]
-            mtd_base = float(before.iloc[-1]) if len(before) else ltp
-            date = closes.index[-1].strftime("%Y-%m-%d")
-            break
-        if not ltp:
-            # Never emit 0 -- that is the failure mode this function exists to fix.
-            ltp = prev_close = mtd_base = h["book_price"]
-            print(f"[hq-dash] WARNING: no live price for {h['symbol']} -- "
-                  f"falling back to workbook price {ltp}")
+        q = quotes.get(h["symbol"], {})
+        if not q.get("ltp"):
+            # Never emit 0 -- app.js's recalcPortInvest() skips a holding priced
+            # 0, so its weight silently drops out of the qty calculator.
+            q = {"ltp": h["book_price"], "prev_close": h["book_price"],
+                 "change_pct": 0.0, "mtd_change_pct": 0.0, "date": "N/A"}
+            print(f"[hq-dash] WARNING: no local price for {h['symbol']} -- "
+                  f"falling back to workbook price {h['book_price']}")
         h.update({
             "clean_symbol": h["symbol"],
             "sector": sectors.get(h["symbol"]) or "Other",
             "status": "Remained",
-            "ltp": round(ltp, 2),
-            "prev_close": round(prev_close, 2),
-            "change_pct": round((ltp / prev_close - 1) * 100, 2) if prev_close else 0.0,
-            "mtd_change_pct": round((ltp / mtd_base - 1) * 100, 2) if mtd_base else 0.0,
-            "value": round(h["qty"] * ltp, 2),
-            "date": date,
+            "ltp": q["ltp"], "prev_close": q["prev_close"],
+            "change_pct": q["change_pct"],
+            "mtd_change_pct": q["mtd_change_pct"],
+            "value": round(h["qty"] * q["ltp"], 2),
+            "date": q["date"],
         })
         h.pop("book_price")
 
@@ -342,6 +333,31 @@ def load_current_portfolio():
               f"Rs.{h['ltp']:>9,.2f} = Rs.{h['value']:>13,.0f}  "
               f"({h['weight'] * 100:5.2f}%)  {h['action']}")
     return rows
+
+
+def build_live_performance(holdings):
+    """Portfolio vs benchmark, today and month-to-date, from the same settled
+    closes the holdings were priced on.
+
+    On the first day of a new book both figures are 0: the basket was formed at
+    last month's close and has not traded a session yet. That is the correct
+    answer, and it is what the previous carried-forward value got wrong.
+    """
+    from live_prices import aggregate, price_symbols
+
+    port_daily, port_mtd = aggregate(holdings)
+    b = price_symbols(["BENCH"], [], aliases={"BENCH": BENCH_CSV})["BENCH"]
+    bench_daily, bench_mtd = b["change_pct"], b["mtd_change_pct"]
+    if not b["ltp"]:
+        print(f"[hq-dash] WARNING: benchmark {BENCH_CSV} unreadable -- "
+              f"benchmark returns reported as 0")
+    return {
+        "portfolio_ret": port_daily, "benchmark_ret": bench_daily,
+        "alpha": round(port_daily - bench_daily, 2),
+        "portfolio_mtd": port_mtd, "benchmark_mtd": bench_mtd,
+        "alpha_mtd": round(port_mtd - bench_mtd, 2),
+        "indicator": "up" if port_daily >= 0 else "down",
+    }
 
 
 def main():
@@ -401,6 +417,9 @@ def main():
                 break
     old_holdings = json.loads(old_txt[hstart:hend])
 
+    current = load_current_portfolio()
+    live_perf = build_live_performance(current)
+
     universe = {
         "exec_summary": exec_summary,
         "avg_ex_ante_sr": avg_ex_ante_sr,
@@ -410,11 +429,14 @@ def main():
                             "Base Add": m["Added"], "Base Rem": m["Removed"]} for m in months],
         "heatmaps": {},
         "monthly_detail": months,
-        "current_portfolio": load_current_portfolio(),   # REAL, re-read from the SOM book every run
+        "current_portfolio": current,                     # REAL, re-read from the SOM book every run
         "exec_history": old["exec_history"],              # REAL, untouched
         "stock_correlation": old["stock_correlation"],    # REAL, untouched
         "total_months": len(months),
-        "live_performance": old["live_performance"],      # REAL, untouched
+        # Recomputed, NOT carried forward. Carrying it forward left the tab
+        # reporting portfolio_mtd 6.32% on 01-09 -- August's figure, on a
+        # September book that had not traded a single session.
+        "live_performance": live_perf,
         "disclaimer": DISCLAIMER,
     }
 

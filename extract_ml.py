@@ -173,9 +173,17 @@ def load_months():
     return out
 
 
+# Priced from the settled CSVs the ML run itself read. yfinance was returning a
+# placeholder bar for a session that had not happened, and measuring MTD from
+# the last bar's month turned "month to date" into the previous month's whole
+# return -- ATHERENERG showed +36.29% MTD on day one of a September book.
+PRICE_FOLDERS = [r"d:\PC2546\portfolio\NIFTY500", "nifty500_host", "TOTAL_STOCKS"]
+BENCH_CSV = r"D:\Shared folder\portfolio\NSE_CNX500, 1D.csv"
+
+
 def load_current():
-    """current_portfolio rows from the ML trade list, priced live."""
-    import yfinance as yf
+    """current_portfolio rows from the ML trade list, priced from local CSVs."""
+    from live_prices import price_symbols
     try:
         txt = open(DATA_JS, encoding="utf-8").read()
         i = txt.index("{", txt.index("DASHBOARD_DATA"))
@@ -203,36 +211,38 @@ def load_current():
                      "prev_qty": int(float(r.iloc[4] or 0)),
                      "book_price": float(r.iloc[6] or 0)})
 
+    quotes = price_symbols([h["symbol"] for h in rows], PRICE_FOLDERS)
     for h in rows:
-        ltp = prev = mtd = 0.0
-        date = "N/A"
-        for tk in (h["symbol"] + ".NS", h["symbol"] + ".BO"):
-            try:
-                df = yf.Ticker(tk).history(period="3mo", interval="1d", auto_adjust=True)
-            except Exception:
-                continue
-            if df is None or df.empty:
-                continue
-            c = df["Close"].dropna()
-            if c.empty:
-                continue
-            ltp = float(c.iloc[-1])
-            prev = float(c.iloc[-2]) if len(c) > 1 else ltp
-            before = c[c.index.month != c.index[-1].month]
-            mtd = float(before.iloc[-1]) if len(before) else ltp
-            date = c.index[-1].strftime("%Y-%m-%d")
-            break
-        if not ltp:
+        q = quotes.get(h["symbol"], {})
+        if not q.get("ltp"):
             # Never emit 0 -- app.js's qty calculator skips a holding priced 0
             # and silently drops its weight into "Cash Left".
-            ltp = prev = mtd = h["book_price"]
-            print(f"[ml] WARNING: no live price for {h['symbol']}, using book {ltp}")
-        h.update({"ltp": round(ltp, 2), "prev_close": round(prev, 2),
-                  "change_pct": round((ltp / prev - 1) * 100, 2) if prev else 0.0,
-                  "mtd_change_pct": round((ltp / mtd - 1) * 100, 2) if mtd else 0.0,
-                  "value": round(h["qty"] * ltp, 2), "date": date})
+            q = {"ltp": h["book_price"], "prev_close": h["book_price"],
+                 "change_pct": 0.0, "mtd_change_pct": 0.0, "date": "N/A"}
+            print(f"[ml] WARNING: no local price for {h['symbol']}, "
+                  f"using book {h['book_price']}")
+        h.update({"ltp": q["ltp"], "prev_close": q["prev_close"],
+                  "change_pct": q["change_pct"],
+                  "mtd_change_pct": q["mtd_change_pct"],
+                  "value": round(h["qty"] * q["ltp"], 2), "date": q["date"]})
         h.pop("book_price")
     return rows
+
+
+def build_live_performance(holdings):
+    """Portfolio vs benchmark, today and MTD, off the same settled closes.
+    Zero on day one of a book, which is the honest answer -- the previous code
+    carried August's figures forward onto an untraded September basket."""
+    from live_prices import aggregate, price_symbols
+    pd_, pm = aggregate(holdings)
+    b = price_symbols(["BENCH"], [], aliases={"BENCH": BENCH_CSV})["BENCH"]
+    if not b["ltp"]:
+        print(f"[ml] WARNING: benchmark {BENCH_CSV} unreadable -- reporting 0")
+    return {"portfolio_ret": pd_, "benchmark_ret": b["change_pct"],
+            "alpha": round(pd_ - b["change_pct"], 2),
+            "portfolio_mtd": pm, "benchmark_mtd": b["mtd_change_pct"],
+            "alpha_mtd": round(pm - b["mtd_change_pct"], 2),
+            "indicator": "up" if pd_ >= 0 else "down"}
 
 
 def main():
@@ -268,6 +278,8 @@ def main():
     else:
         old_holdings = {}
 
+    current = load_current()
+
     payload = {
         "exec_summary": {k: {"Base": em_b[k], "Bench": em_n[k]} for k in em_b},
         "avg_ex_ante_sr": ex_sr,
@@ -278,11 +290,13 @@ def main():
                           for m in months],
         "heatmaps": {},
         "monthly_detail": months,
-        "current_portfolio": load_current(),
+        "current_portfolio": current,
         "exec_history": old.get("exec_history", []),
         "stock_correlation": old.get("stock_correlation", {}),
         "total_months": len(months),
-        "live_performance": old.get("live_performance", {}),
+        # Recomputed, not carried forward -- the old value reported
+        # portfolio_ret 1.06% / MTD 1.77% on a book that had not traded.
+        "live_performance": build_live_performance(current),
     }
 
     cp = payload["current_portfolio"]

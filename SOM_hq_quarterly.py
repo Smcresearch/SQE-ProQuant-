@@ -499,6 +499,17 @@ for port_month in all_port_months:
             _tr = stock_monthly.loc[trade_month] if trade_month in stock_monthly.index else None
             if _tr is None or pd.isna(_tr.get('open')) or not (_tr.get('open') > 0):
                 continue
+        else:
+            # Future-selection mode: the trade month has not happened, so the
+            # test above cannot run. That left the delisting guard switched off
+            # for exactly the book people are about to trade -- CIGNITITEC, dead
+            # since 14-May-2026, was picked into the Sep'26 basket as BUY 56 at
+            # its last-ever close of Rs.1260.10. A stock that did not trade in
+            # the SIGNAL month cannot be bought in the trade month either, so
+            # require a real bar in port_month instead.
+            _sg = stock_monthly.loc[port_month] if port_month in stock_monthly.index else None
+            if _sg is None or pd.isna(_sg.get('close')) or not (_sg.get('close') > 0):
+                continue
 
         # Get historical data up to portfolio month
         stock_hist = stock_monthly[stock_monthly.index <= port_month]

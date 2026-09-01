@@ -243,7 +243,11 @@ def get_live_prices(symbols):
                 # MTD baseline: last trading day of previous month
                 now = datetime.now()
                 prev_month_end = (now.replace(day=1) - pd.Timedelta(days=1))
-                mtd_df = df[df[date_col].dt.month < now.month]
+                # Year-aware: a bare month comparison selects nothing every
+                # January, which would silently make MTD read 0 all month.
+                mtd_df = df[(df[date_col].dt.year < now.year) |
+                            ((df[date_col].dt.year == now.year) &
+                             (df[date_col].dt.month < now.month))]
                 if not mtd_df.empty:
                     mtd_baseline = safe_float(mtd_df.iloc[-1].get('close', 0))
                 else:
@@ -300,9 +304,16 @@ def get_benchmark_live_and_mtd(bench_file, target_date=None):
         prev_close = safe_float(df.iloc[-2][close_col])
         daily = round((last_close / prev_close - 1) * 100, 2) if prev_close > 0 else 0.0
 
-        # MTD baseline - using the month of the LAST row in our (potentially filtered) df
-        last_date = df.iloc[-1][date_col]
-        mtd_df = df[df[date_col].dt.month < last_date.month]
+        # MTD baseline = last close of the previous CALENDAR month, matching
+        # get_live_prices(). Anchoring on the last ROW's month instead meant
+        # that on the 1st of a new month -- before any session had traded -- the
+        # benchmark reported the whole of last month while the portfolio
+        # correctly reported 0.00%, so the dashboard showed a fabricated MTD
+        # alpha (+1.24% on Nifty 50, 01-09-2026) for a book yet to trade.
+        now = datetime.now()
+        mtd_df = df[(df[date_col].dt.year < now.year) |
+                    ((df[date_col].dt.year == now.year) &
+                     (df[date_col].dt.month < now.month))]
         if not mtd_df.empty:
             mtd_baseline = safe_float(mtd_df.iloc[-1][close_col])
         else:

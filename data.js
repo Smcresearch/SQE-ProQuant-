@@ -5417,8 +5417,8 @@ const DASHBOARD_DATA = {
       "benchmark_ret": -0.39,
       "alpha": 0.3,
       "portfolio_mtd": 0.0,
-      "benchmark_mtd": -1.24,
-      "alpha_mtd": 1.24,
+      "benchmark_mtd": 0.0,
+      "alpha_mtd": 0.0,
       "indicator": "down"
     }
   },
@@ -11624,8 +11624,8 @@ const DASHBOARD_DATA = {
       "benchmark_ret": -0.33,
       "alpha": 1.57,
       "portfolio_mtd": 0.0,
-      "benchmark_mtd": -0.04,
-      "alpha_mtd": 0.04,
+      "benchmark_mtd": 0.0,
+      "alpha_mtd": 0.0,
       "indicator": "up"
     }
   },
@@ -18287,8 +18287,8 @@ const DASHBOARD_DATA = {
       "benchmark_ret": -0.33,
       "alpha": 1.61,
       "portfolio_mtd": 0.0,
-      "benchmark_mtd": -0.04,
-      "alpha_mtd": 0.04,
+      "benchmark_mtd": 0.0,
+      "alpha_mtd": 0.0,
       "indicator": "up"
     }
   },
@@ -19057,5 +19057,5 @@ const DASHBOARD_DATA = {
     "YATHARTH": "Healthcare",
     "ZAGGLE": "Information Technology"
   },
-  "last_update": "2026-09-01 00:00:40 IST"
+  "last_update": "2026-09-01 10:27:38 IST"
 };
