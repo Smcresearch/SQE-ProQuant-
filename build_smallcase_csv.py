@@ -158,12 +158,39 @@ def main():
                      rationale(h, name, segment, qty, cost, cost / deployed)])
     rows.sort(key=lambda r: r[1], reverse=True)
 
-    with open(args.out, 'w', newline='', encoding='utf-8-sig') as f:
-        w = csv.writer(f)
-        w.writerow(['NSE Ticker', 'Weight', 'Segment (optional)',
-                    'Rationale (optional)'])
-        for sym, wt, segment, why in rows:
-            w.writerow([sym, f'{wt:.{DP}f}', segment, why])
+    header = ['NSE Ticker', 'Weight', 'Segment (optional)', 'Rationale (optional)']
+    if args.out.lower().endswith('.xlsx'):
+        # Same four columns as the CSV -- smallcase takes the CSV, this is for
+        # reading and circulating. Weight stays numeric so it still sums.
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font, PatternFill
+        from openpyxl.utils import get_column_letter
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'Portfolio'
+        for j, c in enumerate(header, 1):
+            cell = ws.cell(1, j, c)
+            cell.fill = PatternFill('solid', fgColor='1F3864')
+            cell.font = Font(color='FFFFFF', bold=True)
+        for i, (sym, wt, segment, why) in enumerate(rows, 2):
+            ws.cell(i, 1, sym)
+            ws.cell(i, 2, wt).number_format = f'0.{"0" * DP}'
+            ws.cell(i, 3, segment)
+            ws.cell(i, 4, why).alignment = Alignment(wrap_text=True, vertical='top')
+        r = len(rows) + 2
+        ws.cell(r, 1, 'TOTAL').font = Font(bold=True)
+        ws.cell(r, 2, sum(x[1] for x in rows)).number_format = f'0.{"0" * DP}'
+        ws.cell(r, 2).font = Font(bold=True)
+        for j, w_ in enumerate([14, 10, 32, 120], 1):
+            ws.column_dimensions[get_column_letter(j)].width = w_
+        ws.freeze_panes = 'A2'
+        wb.save(args.out)
+    else:
+        with open(args.out, 'w', newline='', encoding='utf-8-sig') as f:
+            w = csv.writer(f)
+            w.writerow(header)
+            for sym, wt, segment, why in rows:
+                w.writerow([sym, f'{wt:.{DP}f}', segment, why])
 
     print(f'[smallcase] {len(rows)} holdings, weight sum '
           f'{sum(r[1] for r in rows):.{DP}f}%, basis={args.basis}, '
