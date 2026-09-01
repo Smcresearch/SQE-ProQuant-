@@ -81,7 +81,17 @@ def compute_metrics(returns_series, bench_series, rf_annual=0.06):
 
 
 SOM_SUMMARY_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2_Summary.xlsx"  # the REAL SOM-run per-month results (v2 = Aug'26 price refresh, saved under a new name since the v1 files were open in Excel)
+SOM_CURRENT_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2_Current.xlsx"  # the current month's actual book (Symbol/Action/Qty/Prev Qty/Weight/Price)
 HQ_DATA_JS = r"D:\Host_portfolio\hq_data.js"
+DATA_JS = r"D:\Host_portfolio\data.js"        # only for its sector_map
+
+# Holdings whose Yahoo ticker is not simply SYMBOL.NS.
+TICKER_OVERRIDE = {
+    "ADORWELD": "ADOR.NS",
+    "KLBRENG": "KLBRENG-B.NS",
+    "SELAN": "ANTELOPUS.NS",
+    "MODERNINS": "515008.BO",
+}
 
 DISCLAIMER = (
     "Backtest, not a live track record: this High Quality screen (ROCE>18%, "
@@ -224,6 +234,116 @@ def load_som_months():
     return months
 
 
+def load_sector_map():
+    """sector_map out of data.js. Best-effort: an unmapped symbol renders as
+    'Other', which is what the frozen portfolio already showed for most rows."""
+    try:
+        txt = open(DATA_JS, encoding="utf-8").read()
+        i = txt.index("{", txt.index("DASHBOARD_DATA"))
+        return json.JSONDecoder().raw_decode(txt[i:])[0].get("sector_map", {})
+    except Exception as e:
+        print(f"[hq-dash] WARNING: no sector_map ({e}) -- sectors will read 'Other'.")
+        return {}
+
+
+def load_current_portfolio():
+    """Rebuild current_portfolio from the SOM Current workbook.
+
+    This used to be carried forward verbatim from the previous hq_data.js on
+    the theory that it was "REAL data" the backtest rebuild must not clobber.
+    It was real once, but nothing refreshed it after extract_hq.py went missing,
+    so it drifted into a different portfolio entirely: holdings the book no
+    longer has, 12 holdings it does have missing (including both bullion legs,
+    20% of the book), and 11 rows priced at 0. A row priced 0 is not cosmetic --
+    app.js recalcPortInvest() skips it, so its weight silently falls out of the
+    investment calculator and reappears as phantom "Cash Left".
+
+    Reading the workbook every run is the only way this stays true. Prices come
+    from yfinance so LTP is the live session, falling back to the workbook's own
+    Current Price column so a fetch failure degrades to a stale price rather
+    than to the 0 that breaks the calculator.
+    """
+    import openpyxl
+    import yfinance as yf
+
+    wb = openpyxl.load_workbook(SOM_CURRENT_XLSX, data_only=True)
+    ws = wb[wb.sheetnames[0]]
+    sectors = load_sector_map()
+
+    rows = []
+    for r in ws.iter_rows(min_row=4, values_only=True):
+        if not r or not r[0]:
+            continue
+        sym, action, chg, tgt, prev, weight, price = (list(r) + [None] * 7)[:7]
+        sym = str(sym).replace("_1d_max", "").strip()
+        tgt, prev = int(tgt or 0), int(prev or 0)
+        # Exits (target 0) are instructions, not holdings -- the nifty tabs drop
+        # them the same way, and keeping them would dilute every weight.
+        if tgt <= 0:
+            continue
+        rows.append({"symbol": sym, "action": f"{action} {int(chg or 0)}",
+                     "qty": tgt, "prev_qty": prev,
+                     "weight": float(weight or 0), "book_price": float(price or 0)})
+
+    for h in rows:
+        tk = TICKER_OVERRIDE.get(h["symbol"], h["symbol"] + ".NS")
+        ltp = prev_close = mtd_base = 0.0
+        date = "N/A"
+        for cand in ([tk] if h["symbol"] in TICKER_OVERRIDE
+                     else [tk, h["symbol"] + ".BO"]):
+            try:
+                df = yf.Ticker(cand).history(period="3mo", interval="1d",
+                                             auto_adjust=True)
+            except Exception:
+                continue
+            if df is None or df.empty:
+                continue
+            closes = df["Close"].dropna()
+            if closes.empty:
+                continue
+            ltp = float(closes.iloc[-1])
+            prev_close = float(closes.iloc[-2]) if len(closes) > 1 else ltp
+            month = closes.index[-1].month
+            before = closes[closes.index.month != month]
+            mtd_base = float(before.iloc[-1]) if len(before) else ltp
+            date = closes.index[-1].strftime("%Y-%m-%d")
+            break
+        if not ltp:
+            # Never emit 0 -- that is the failure mode this function exists to fix.
+            ltp = prev_close = mtd_base = h["book_price"]
+            print(f"[hq-dash] WARNING: no live price for {h['symbol']} -- "
+                  f"falling back to workbook price {ltp}")
+        h.update({
+            "clean_symbol": h["symbol"],
+            "sector": sectors.get(h["symbol"]) or "Other",
+            "status": "Remained",
+            "ltp": round(ltp, 2),
+            "prev_close": round(prev_close, 2),
+            "change_pct": round((ltp / prev_close - 1) * 100, 2) if prev_close else 0.0,
+            "mtd_change_pct": round((ltp / mtd_base - 1) * 100, 2) if mtd_base else 0.0,
+            "value": round(h["qty"] * ltp, 2),
+            "date": date,
+        })
+        h.pop("book_price")
+
+    # The whole point of the rebuild: every holding priced, and the weights that
+    # drive the qty calculator actually summing to the book.
+    unpriced = [h["symbol"] for h in rows if not h["ltp"]]
+    assert not unpriced, f"holdings still unpriced: {unpriced}"
+    total_w = sum(h["weight"] for h in rows)
+    assert abs(total_w - 1.0) < 0.02, f"weights sum to {total_w:.4f}, not ~1.0"
+
+    deployed = sum(h["value"] for h in rows)
+    print(f"[hq-dash] current_portfolio rebuilt from {SOM_CURRENT_XLSX}")
+    print(f"[hq-dash]   {len(rows)} holdings | weights sum {total_w:.4f} | "
+          f"all priced | book value Rs.{deployed:,.0f}")
+    for h in sorted(rows, key=lambda x: -x["weight"]):
+        print(f"[hq-dash]   {h['clean_symbol']:<12} qty {h['qty']:>7,} x "
+              f"Rs.{h['ltp']:>9,.2f} = Rs.{h['value']:>13,.0f}  "
+              f"({h['weight'] * 100:5.2f}%)  {h['action']}")
+    return rows
+
+
 def main():
     months = load_som_months()
     # The last row may be a still-forming "live" placeholder (Base==0.0, no
@@ -290,7 +410,7 @@ def main():
                             "Base Add": m["Added"], "Base Rem": m["Removed"]} for m in months],
         "heatmaps": {},
         "monthly_detail": months,
-        "current_portfolio": old["current_portfolio"],   # REAL, untouched
+        "current_portfolio": load_current_portfolio(),   # REAL, re-read from the SOM book every run
         "exec_history": old["exec_history"],              # REAL, untouched
         "stock_correlation": old["stock_correlation"],    # REAL, untouched
         "total_months": len(months),
@@ -310,8 +430,8 @@ def main():
 
     print(f"[hq-dash] {len(months)} backtest months -> {HQ_DATA_JS}")
     print(f"[hq-dash] Base CAGR={lm_base['CAGR']}% Sharpe={lm_base['Sharpe']} MaxDD={lm_base['Max_DD']}%")
-    print(f"[hq-dash] current_portfolio ({len(old['current_portfolio'])} stocks) and "
-          f"MONTHLY_HOLDINGS preserved as real data.")
+    print(f"[hq-dash] current_portfolio ({len(universe['current_portfolio'])} stocks) "
+          f"rebuilt from the SOM book; MONTHLY_HOLDINGS preserved as real data.")
 
 
 if __name__ == "__main__":
