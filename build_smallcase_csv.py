@@ -81,7 +81,7 @@ def risk_band(beta):
     return 'high market sensitivity'
 
 
-def rationale(h, name, segment, qty, cost, exec_w):
+def rationale(h, name, segment, qty, cost, exec_w, style='august'):
     beta, erb = h['beta'], h['erb']
     # prev_qty, not status: the engine marks a first-time buy "Remained" too
     # (SAILIFE / KRN / AVALON entered in Sep'26 that way), so keying off status
@@ -91,17 +91,22 @@ def rationale(h, name, segment, qty, cost, exec_w):
     fresh = (prev == 0) if prev is not None else h['status'].lower().startswith('add')
     entry = ('Fresh entry this rebalance' if fresh
              else 'Carried over from the previous rebalance')
-    return (
+    head = (
         f"{name} ({segment}). Beta {beta:.2f} vs the benchmark "
         f"({risk_band(beta)}); excess return to beta (ERB) {erb:.2f}, i.e. "
         f"{erb:.2f}x of excess return earned per unit of market risk taken. "
         f"Selected by the SQE quant screen, which ranks the All-Indices "
         f"universe on ERB and sizes positions so the highest excess-beta-return "
-        f"names carry the most weight. {entry}. Model weight "
-        f"{h['weight'] * 100:.2f}%, executed as {qty} share"
-        f"{'' if qty == 1 else 's'} at Rs {h['ltp']:,.2f} = Rs {cost:,.0f}, "
-        f"which is {exec_w * 100:.2f}% of the capital actually deployed."
+        f"names carry the most weight. "
     )
+    if style == 'detailed':
+        return (f"{head}{entry}. Model weight {h['weight'] * 100:.2f}%, executed "
+                f"as {qty} share{'' if qty == 1 else 's'} at Rs {h['ltp']:,.2f} "
+                f"= Rs {cost:,.0f}, which is {exec_w * 100:.2f}% of the capital "
+                f"actually deployed.")
+    # 'august' -- the wording used in the published files, kept as the default so
+    # month-on-month files stay diffable.
+    return f"{head}{entry}; held at {h['weight'] * 100:.2f}% of the portfolio."
 
 
 def size(port, capital):
@@ -122,6 +127,9 @@ def main():
     ap.add_argument('--universe', default=UNIVERSE)
     ap.add_argument('--capital', type=float, default=100000,
                     help='basket size the whole-share sizing is run at')
+    ap.add_argument('--rationale', choices=['august', 'detailed'], default='august',
+                    help="august = the wording used in the published files; "
+                         "detailed = adds executed shares and rupee cost")
     ap.add_argument('--basis', choices=['executed', 'model'], default='executed',
                     help='executed = share of capital actually deployed; '
                          'model = raw model weights')
@@ -155,7 +163,7 @@ def main():
         sym = h['clean_symbol']
         name, segment = META.get(sym, (sym, h.get('sector', '')))
         rows.append([sym, u / 10 ** DP, segment,
-                     rationale(h, name, segment, qty, cost, cost / deployed)])
+                     rationale(h, name, segment, qty, cost, cost / deployed, args.rationale)])
     rows.sort(key=lambda r: r[1], reverse=True)
 
     header = ['NSE Ticker', 'Weight', 'Segment (optional)', 'Rationale (optional)']
