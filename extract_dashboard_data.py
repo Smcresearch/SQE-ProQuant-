@@ -165,6 +165,8 @@ def get_current_portfolio(xl, sector_map):
     wt_col = next((j for j, c in enumerate(cols) if c == 'SIM Weight'), None)
     action_col = next((j for j, c in enumerate(cols) if c == 'Action'), None)
     status_col = next((j for j, c in enumerate(cols) if c == 'Status'), None)
+    qty_col = next((j for j, c in enumerate(cols) if c == 'Qty'), None)
+    prev_col = next((j for j, c in enumerate(cols) if c == 'Prev_Qty'), None)
 
     for k in range(len(data)):
         sym = str(data.iloc[k, 0])
@@ -187,7 +189,16 @@ def get_current_portfolio(xl, sector_map):
             'beta': safe_float(data.iloc[k, beta_col]) if beta_col is not None else 0,
             'erb': safe_float(data.iloc[k, erb_col]) if erb_col is not None else 0,
             'action': str(data.iloc[k, action_col]) if action_col is not None else '',
-            'status': status_val
+            'status': status_val,
+            # Carried through so consumers can tell a genuinely new position from
+            # a top-up. The engine writes Status="Remained" even for a first-time
+            # buy (SAILIFE, KRN and AVALON entered in Sep'26 with Prev_Qty 0 and
+            # Action "BUY n", all marked Remained), so Status cannot be used for
+            # this and prev_qty == 0 is the only reliable signal. Also brings
+            # data.js in line with hq_data.js / ml_data.js, which already carry
+            # qty and prev_qty.
+            'qty': int(safe_float(data.iloc[k, qty_col])) if qty_col is not None else None,
+            'prev_qty': int(safe_float(data.iloc[k, prev_col])) if prev_col is not None else None,
         }
         stocks.append(stock_data)
     return stocks
