@@ -82,6 +82,7 @@ def compute_metrics(returns_series, bench_series, rf_annual=0.06):
 
 SOM_SUMMARY_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2_Summary.xlsx"  # the REAL SOM-run per-month results (v2 = Aug'26 price refresh, saved under a new name since the v1 files were open in Excel)
 SOM_CURRENT_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2_Current.xlsx"  # the current month's actual book (Symbol/Action/Qty/Prev Qty/Weight/Price)
+SOM_MAIN_XLSX = r"D:\Host_portfolio\SOM_HQ_Quarterly_v2.xlsx"             # PM_YYYY-MM per-month sheets
 HQ_DATA_JS = r"D:\Host_portfolio\hq_data.js"
 DATA_JS = r"D:\Host_portfolio\data.js"        # only for its sector_map
 
@@ -335,6 +336,57 @@ def load_current_portfolio():
     return rows
 
 
+def build_monthly_holdings():
+    """MONTHLY_HOLDINGS.high_quality from the workbook's PM_ sheets.
+
+    This used to be carried forward from the previous hq_data.js, so it had
+    frozen at 2026-06 -- and its contents came from an older run entirely (only
+    16 of 30 names matched the current engine's June book). app.js's
+    "Portfolio Changes" tab derives exits by diffing current_portfolio against
+    the latest snapshot before the live month, so a stale snapshot meant the
+    September book was being compared against JUNE: the six positions actually
+    exited in September (RPGLIFE, FORCEMOT, MONARCH, EMCURE, BANCOINDIA,
+    SHAKTIPUMP) never showed a sell instruction, while long-gone June names
+    showed as freshly sold.
+
+    Keyed by the sheet's own PORTFOLIO (signal) month, matching monthly_detail's
+    Month and the equity books' MONTHLY_HOLDINGS -- that keeps the heatmap modal
+    showing the same month it was clicked on. Selecting "last month's book" from
+    these keys is the front-end's job, and app.js does it by skipping the
+    snapshot identical to the current book.
+    """
+    import re
+    import pandas as pd
+
+    xl = pd.ExcelFile(SOM_MAIN_XLSX)
+    out = {}
+    for sh in sorted(s for s in xl.sheet_names if re.fullmatch(r"PM_\d{4}-\d{2}", s)):
+        trade = sh[3:]
+        d = xl.parse(sh, header=None)
+        try:
+            hdr = next(i for i in range(len(d))
+                       if str(d.iloc[i, 1]).strip() == "Symbol")
+        except StopIteration:
+            continue
+        rows = []
+        for _, r in d.iloc[hdr + 1:].iterrows():
+            sym = str(r.iloc[1]).strip()
+            if sym in ("nan", "", "None"):
+                break                      # table ends at the first blank row
+            num = lambda i: (float(r.iloc[i])
+                             if str(r.iloc[i]) not in ("nan", "", "None") else None)
+            w = num(10)
+            rows.append({"s": sym,
+                         "w": round(w * 100, 2) if w is not None else None,
+                         "p": round(num(11), 2) if num(11) is not None else None,
+                         "st": str(r.iloc[2]).strip(),
+                         "b": round(num(4), 3) if num(4) is not None else None,
+                         "e": round(num(7), 3) if num(7) is not None else None})
+        if rows:
+            out[trade] = sorted(rows, key=lambda x: -(x["w"] or 0))
+    return out
+
+
 def build_live_performance(holdings):
     """Portfolio vs benchmark, today and month-to-date, from the same settled
     closes the holdings were priced on.
@@ -418,6 +470,7 @@ def main():
     old_holdings = json.loads(old_txt[hstart:hend])
 
     current = load_current_portfolio()
+    monthly_holdings = build_monthly_holdings()
     live_perf = build_live_performance(current)
 
     universe = {
@@ -448,12 +501,13 @@ def main():
                 "   remain the REAL executed-portfolio track record, untouched. */\n")
         f.write("DASHBOARD_DATA.high_quality = " + json.dumps(universe, separators=(",", ":"), ensure_ascii=False) + ";\n")
         f.write("if (typeof MONTHLY_HOLDINGS !== 'undefined') MONTHLY_HOLDINGS.high_quality = "
-                + json.dumps(old_holdings, separators=(",", ":"), ensure_ascii=False) + ";\n")
+                + json.dumps(monthly_holdings, separators=(",", ":"), ensure_ascii=False) + ";\n")
 
     print(f"[hq-dash] {len(months)} backtest months -> {HQ_DATA_JS}")
     print(f"[hq-dash] Base CAGR={lm_base['CAGR']}% Sharpe={lm_base['Sharpe']} MaxDD={lm_base['Max_DD']}%")
-    print(f"[hq-dash] current_portfolio ({len(universe['current_portfolio'])} stocks) "
-          f"rebuilt from the SOM book; MONTHLY_HOLDINGS preserved as real data.")
+    print(f"[hq-dash] current_portfolio ({len(universe['current_portfolio'])} stocks) and "
+          f"MONTHLY_HOLDINGS ({len(monthly_holdings)} months, "
+          f"{min(monthly_holdings)}..{max(monthly_holdings)}) rebuilt from the SOM book.")
 
 
 if __name__ == "__main__":

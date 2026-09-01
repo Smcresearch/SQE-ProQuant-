@@ -256,12 +256,6 @@ function renderBacktestPeriod(d) {
    OVERVIEW
 ══════════════════════════════════════════════ */
 function renderOverview(d) {
-  const noteEl = document.getElementById('universe-note');
-  if (noteEl) {
-    if (d.disclaimer) { noteEl.textContent = '⚠ ' + d.disclaimer; noteEl.style.display = 'block'; }
-    else { noteEl.style.display = 'none'; }
-  }
-
   const base = d.layer_metrics.Base;
   const kpis = [
     { label: 'CAGR (SQE)',       val: base.CAGR,          unit: '%', color: '#22d3ee', accent: '#22d3ee' },
@@ -1327,8 +1321,22 @@ function renderTrades(d) {
   // incorrectly compare against June, making most holdings appear as new/changed.
   const now = new Date();
   const liveMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  const prevMonths = Object.keys(snap).sort().filter(m => m < liveMonth);
-  const prevHolds = prevMonths.length ? snap[prevMonths[prevMonths.length - 1]] : [];
+  const portSet = new Set((d.current_portfolio || []).map(s => s.clean_symbol));
+  const sameAsCurrent = (h) => h && h.length === portSet.size
+    && h.every(x => portSet.has(x.s));
+  // Pick the newest snapshot that is NOT the book being shown right now.
+  // Filtering on the calendar month alone was wrong: MONTHLY_HOLDINGS is keyed
+  // by SIGNAL month for the equity and High Quality tabs, so the "2026-08" key
+  // holds the September book. On 01-09 that made the tab compare September
+  // against itself and report no exits at all -- MARUTI and POWERGRID had left
+  // the Nifty 50 book with nothing telling anyone to sell them. Comparing the
+  // holdings themselves works whichever way a tab happens to be keyed.
+  const prevMonths = Object.keys(snap).sort().filter(m => m <= liveMonth);
+  let prevHolds = [];
+  for (let i = prevMonths.length - 1; i >= 0; i--) {
+    const cand = snap[prevMonths[i]];
+    if (!sameAsCurrent(cand)) { prevHolds = cand || []; break; }
+  }
   const prevBy = {};
   prevHolds.forEach(x => { prevBy[x.s] = x; });
 
