@@ -81,7 +81,7 @@ def risk_band(beta):
     return 'high market sensitivity'
 
 
-def rationale(h, name, segment, qty, cost, exec_w, style='august'):
+def rationale(h, name, segment, qty, cost, exec_w, style='august', shown_w=None):
     beta, erb = h['beta'], h['erb']
     # prev_qty, not status: the engine marks a first-time buy "Remained" too
     # (SAILIFE / KRN / AVALON entered in Sep'26 that way), so keying off status
@@ -106,7 +106,10 @@ def rationale(h, name, segment, qty, cost, exec_w, style='august'):
                 f"actually deployed.")
     # 'august' -- the wording used in the published files, kept as the default so
     # month-on-month files stay diffable.
-    return f"{head}{entry}; held at {h['weight'] * 100:.2f}% of the portfolio."
+    w = h['weight'] * 100 if shown_w is None else shown_w
+    # the weight actually written to the Weight column, so the sentence and
+    # the column cannot disagree (they did on the executed basis)
+    return f"{head}{entry}; held at {w:.2f}% of the portfolio."
 
 
 def size(port, capital):
@@ -163,7 +166,8 @@ def main():
         sym = h['clean_symbol']
         name, segment = META.get(sym, (sym, h.get('sector', '')))
         rows.append([sym, u / 10 ** DP, segment,
-                     rationale(h, name, segment, qty, cost, cost / deployed, args.rationale)])
+                     rationale(h, name, segment, qty, cost, cost / deployed, args.rationale,
+                               u / 10 ** DP)])
     rows.sort(key=lambda r: r[1], reverse=True)
 
     header = ['NSE Ticker', 'Weight', 'Segment (optional)', 'Rationale (optional)']

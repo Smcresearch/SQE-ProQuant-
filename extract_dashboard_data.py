@@ -481,14 +481,30 @@ for universe, cfg in UNIVERSES.items():
     df_sum = pd.read_excel(xl, sheet_name='Detailed_Monthly_Summary')
     df_sum['Month'] = df_sum['Month'].astype(str)
     
+    # Statistics run on COMPLETED months only. The final row is the month being
+    # traded right now: on 02-09 it held two days of September at -0.03% and was
+    # being folded into CAGR, Sharpe and max drawdown as though a full month had
+    # elapsed -- which also annualised over 80 months when only 79 had finished.
+    # hq_data.js and ml_data.js already drop their live row; this brings the
+    # equity books in line. df_sum stays intact for monthly_detail and the
+    # equity curve, so the chart and heatmap still show the forming month.
+    _cur = datetime.now().strftime('%Y-%m')
+    df_done = df_sum[df_sum['Trade_Month'].astype(str).str[:7] < _cur] \
+        if 'Trade_Month' in df_sum.columns else df_sum[df_sum['Month'].str[:7] < _cur]
+    if df_done.empty or len(df_done) < 2:
+        df_done = df_sum          # nothing completed yet: fall back rather than divide by zero
+    if len(df_done) < len(df_sum):
+        print(f"  [live] excluding {len(df_sum) - len(df_done)} in-progress month(s) "
+              f"from statistics (last completed: {df_done['Month'].iloc[-1]})")
+
     # Avg Ex-Ante Sharpe from the actual monthly column
-    avg_ex_ante_sr = round(float(df_sum['Ex_Ante_Sharpe'].mean()), 2)
-    
+    avg_ex_ante_sr = round(float(df_done['Ex_Ante_Sharpe'].mean()), 2)
+
     # 3. Computed metrics for all 7 layers + Benchmark
-    bench_returns = df_sum['Bench'].values
+    bench_returns = df_done['Bench'].values
     layer_metrics = {}
     for layer in ['Base', 'ST', 'EMA', 'COMBO', 'ULTRA', 'COMBO_HEDGE', 'ULTRA_HEDGE', 'Bench']:
-        metrics = compute_metrics(df_sum[layer].values, bench_returns)
+        metrics = compute_metrics(df_done[layer].values, bench_returns)
         if layer == 'Bench':
             metrics['Alpha'] = 0.0
         layer_metrics[layer] = metrics
@@ -521,7 +537,20 @@ for universe, cfg in UNIVERSES.items():
     available_cols = [c for c in wanted_cols if c in df_sum.columns]
     monthly_detail = df_sum[available_cols].to_dict(orient='records')
 
-    
+    # Label each row by the month the return was EARNED, not the month the
+    # signal was formed. The engine's "Month" is the signal month and its return
+    # is realised in Trade_Month, but app.js plots the heatmap on Month and
+    # treats the last row as the live month and hides it. So August's P&L
+    # (total759 +8.85%) was being drawn in the JULY cell while the August cell
+    # held a part-month of September and was then suppressed -- August simply
+    # never appeared. Verified against the index: NIFTY500 actually returned
+    # -0.000441 in August, which the workbook files under Month=2026-07.
+    # ml_data.js already labels by trade month; this brings the rest in line.
+    for row in monthly_detail:
+        if row.get('Trade_Month'):
+            row['Signal_Month'] = str(row['Month'])[:7]
+            row['Month'] = str(row['Trade_Month'])[:7]
+
     # Clean floats
     for row in monthly_detail:
         for k, v in row.items():

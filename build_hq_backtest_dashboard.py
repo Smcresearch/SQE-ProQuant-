@@ -205,8 +205,19 @@ def load_som_months():
             # month entirely instead of guessing at its return.
             print(f"[qbt-dash] WARNING: {m} has no Port Return % value (blank/error cell) -- excluded, not zeroed.")
             continue
+        # Label by the month the return was EARNED. The sheet's "Portfolio
+        # Month" is the signal month; its return lands in the month after, and
+        # the heatmap plots on Month while hiding the last row as live -- so
+        # August's +9.66% was drawn in the July cell and August showed nothing.
+        _tm = ws.cell(row=r, column=idx["Trade Month"]).value if "Trade Month" in idx else None
+        if _tm and month_re.match(str(_tm).strip()):
+            _label = str(_tm).strip()
+        else:
+            _y, _mo = map(int, str(m).strip().split("-"))
+            _label = f"{_y + 1:04d}-01" if _mo == 12 else f"{_y:04d}-{_mo + 1:02d}"
         months.append({
-            "Month": str(m).strip(),
+            "Month": _label,
+            "Signal_Month": str(m).strip(),
             "Stock_Count": int(ws.cell(row=r, column=idx["Stocks"]).value or 0),
             "Added": int(ws.cell(row=r, column=idx["Added Stocks"]).value or 0),
             "Removed": int(ws.cell(row=r, column=idx["Removed Stocks"]).value or 0),
@@ -349,11 +360,10 @@ def build_monthly_holdings():
     SHAKTIPUMP) never showed a sell instruction, while long-gone June names
     showed as freshly sold.
 
-    Keyed by the sheet's own PORTFOLIO (signal) month, matching monthly_detail's
-    Month and the equity books' MONTHLY_HOLDINGS -- that keeps the heatmap modal
-    showing the same month it was clicked on. Selecting "last month's book" from
-    these keys is the front-end's job, and app.js does it by skipping the
-    snapshot identical to the current book.
+    Keyed by the month the book is HELD (the sheet's portfolio month + 1), which
+    is how monthly_detail is labelled and how the heatmap modal looks holdings
+    up. Selecting "last month's book" from these keys is the front-end's job,
+    and app.js does it by skipping the snapshot identical to the current book.
     """
     import re
     import pandas as pd
@@ -361,7 +371,8 @@ def build_monthly_holdings():
     xl = pd.ExcelFile(SOM_MAIN_XLSX)
     out = {}
     for sh in sorted(s for s in xl.sheet_names if re.fullmatch(r"PM_\d{4}-\d{2}", s)):
-        trade = sh[3:]
+        y, mo = map(int, sh[3:].split("-"))
+        trade = f"{y + 1:04d}-01" if mo == 12 else f"{y:04d}-{mo + 1:02d}"
         d = xl.parse(sh, header=None)
         try:
             hdr = next(i for i in range(len(d))

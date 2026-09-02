@@ -42,7 +42,12 @@ def main():
     price = {}         # month -> { full_symbol: price }
 
     for sh in port_sheets:
-        month = sh.replace('Port_', '')
+        # Key by the month the book is HELD, not the signal month the sheet is
+        # named for. monthly_detail is labelled the same way, and the heatmap
+        # modal looks holdings up by whichever month the user clicked -- keying
+        # these one month apart showed August's cell alongside July's holdings.
+        _y, _m = map(int, sh.replace('Port_', '').split('-'))
+        month = f'{_y + 1:04d}-01' if _m == 12 else f'{_y:04d}-{_m + 1:02d}'
         df = pd.read_excel(xl, sheet_name=sh, header=1)
         if 'Stock' not in df.columns or 'SIM Weight' not in df.columns:
             continue
