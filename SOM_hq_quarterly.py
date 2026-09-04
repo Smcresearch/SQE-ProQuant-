@@ -84,7 +84,13 @@ END_MONTH        = os.environ.get("END_MONTH", "2026-08")    # matches its last
 # Portfolio parameters
 BETA_WINDOW      = 60           # Months for beta calculation (adaptive up to this max)
 MIN_OBS          = 2          # Minimum observations required (variance needs at least 2)
-MAX_WEIGHT       = 0.10         # Maximum weight per stock (10%)
+MAX_WEIGHT       = float(os.environ.get("MAX_WEIGHT", "0.10"))
+# ^ hard ceiling on ONE stock as a share of TOTAL capital, cash included.
+# Anything the capped book cannot absorb is held as cash, not pushed into the
+# remaining names.
+CASH_RF_MIN      = float(os.environ.get("CASH_RF_MIN", "500000"))
+# ^ undeployed cash above this earns the risk-free rate for the month. Below it
+# the residual is left idle -- rounding change is not worth placing.
 INVESTMENT       = float(os.environ.get("INVESTMENT", 10_000_000))   # Total investment amount (Rs. 1 Crore)
 TXN_COST_RATE    = float(os.environ.get("TXN_COST_RATE", 0.002))     # Transaction cost (0.2%)
 
@@ -239,8 +245,43 @@ def cap_weights_iterative(raw_weights, cap, max_iter=1000):
     total = w.sum()
     if total > EPSILON:
         w = w / total
-    
+
     return w
+
+
+def cap_weights_absolute(raw_weights, cap, budget, max_iter=1000):
+    """Scale raw weights to `budget` and hold every one at or below `cap`.
+
+    Unlike cap_weights_iterative this does NOT renormalise at the end, so the
+    cap is a hard limit rather than a starting point. When too few names
+    qualify to absorb the budget the result deliberately sums to LESS than
+    `budget`; the shortfall is the caller's cash.
+
+    That renormalise is what let the stated 10% cap be breached: with only three
+    eligible names in Dec'23 and Jan'24 the weights were scaled back up to fill
+    the whole 80% stock sleeve, producing single positions of 36% and 64% of the
+    fund under a rule labelled "max 10%".
+
+    Returns weights as fractions of TOTAL capital, summing to <= budget.
+    """
+    w = np.array(raw_weights, dtype=float).copy()
+    total = w.sum()
+    if total <= EPSILON:
+        return np.zeros_like(w)
+    w = w / total * budget                      # fractions of total capital
+
+    for _ in range(max_iter):
+        over = w > cap + EPSILON
+        if not over.any():
+            break
+        excess = (w[over] - cap).sum()
+        w[over] = cap
+        room = np.where(~over, cap - w, 0.0)    # how much each name can still take
+        room_sum = room.sum()
+        if room_sum <= EPSILON:
+            break                               # everyone is at the cap: rest is cash
+        w = w + excess * (room / room_sum)
+    return np.minimum(w, cap)
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -662,7 +703,14 @@ for port_month in all_port_months:
         continue
     
     sel['wi_raw'] = sel['Zi'] / Z_sum
-    sel['wi'] = cap_weights_iterative(sel['wi_raw'].values, MAX_WEIGHT)
+    # MAX_WEIGHT is a hard ceiling on the share of TOTAL capital in one stock,
+    # applied straight in fund terms. It used to be enforced inside the stock
+    # sleeve and then scaled, which meant a "capped" name was really
+    # MAX_WEIGHT x STOCK_SLEEVE of the fund (8%, not 10%) -- and worse, the
+    # renormalise inside cap_weights_iterative undid the cap entirely whenever
+    # too few names qualified. Anything the capped book cannot absorb stays in
+    # cash rather than being forced into the survivors.
+    sel['wi'] = cap_weights_absolute(sel['wi_raw'].values, MAX_WEIGHT, STOCK_SLEEVE)
     sel['is_metal'] = False
 
     # ──────────────────────────────────────────────────────────────────────
@@ -681,10 +729,14 @@ for port_month in all_port_months:
     # rather than handed to stocks, so the stock sleeve stays its configured
     # size and runs stay comparable across months.
     funded_metal_weight = sum(r['wi'] for r in metal_rows)
-    sel['wi'] = sel['wi'] * STOCK_SLEEVE
+    # sel['wi'] is already in fund terms -- cap_weights_absolute scaled it to
+    # STOCK_SLEEVE -- so there is no second scaling here.
+    stock_weight = float(sel['wi'].sum())
     if metal_rows:
         sel = pd.concat([sel, pd.DataFrame(metal_rows)], ignore_index=True)
-    cash_weight = METALS_WEIGHT - funded_metal_weight
+    # Everything not placed: the stock sleeve the cap could not absorb, plus any
+    # bullion leg with no data yet.
+    cash_weight = (STOCK_SLEEVE - stock_weight) + (METALS_WEIGHT - funded_metal_weight)
 
     # Calculate quantities
     sel['allocation'] = INVESTMENT * sel['wi']
@@ -869,11 +921,23 @@ for port_month in all_port_months:
     # Distribute cost proportionally
     sel['cost'] = total_txn_cost * (sel['invest'] / sel['invest'].sum()) if sel['invest'].sum() > 0 else 0
     
+    # Cash the capped book could not place earns the risk-free rate for the
+    # month, but only once it is worth placing: below CASH_RF_MIN it is left
+    # idle, as a few thousand rupees would not actually be put into T-bills.
+    # Previously this cash earned nothing while still sitting in the return's
+    # denominator (funding_required = max(INVESTMENT, book_cost)), so an
+    # under-deployed month was silently penalised.
+    cash_amount = max(0.0, cash_weight) * INVESTMENT
+    cash_pnl = (cash_amount * risk_free_rate / 12.0
+                if cash_amount > CASH_RF_MIN else 0.0)
+
     # Net PNL (Including removed stocks)
-    monthly_net_pnl = sel['gross_pnl'].sum() + current_removed_pnl - total_txn_cost
+    monthly_net_pnl = (sel['gross_pnl'].sum() + current_removed_pnl
+                       + cash_pnl - total_txn_cost)
 
     # If this is a future selection (no trade data), zero out the PNL metrics
     if not sel['trade_data_exists'].iloc[0]:
+        cash_pnl = 0.0
         monthly_net_pnl = 0.0
         sel['gross_pnl'] = 0.0
         sel['gap_pnl'] = 0.0
@@ -906,6 +970,8 @@ for port_month in all_port_months:
     sel['port_month'] = str(port_month)
     sel['trade_month'] = str(trade_month)
     sel['rf_rate'] = risk_free_rate
+    sel['cash_weight'] = max(0.0, cash_weight)
+    sel['cash_pnl'] = cash_pnl
     sel['C_star'] = C_star
     sel['bench_var'] = bench_var_annual
     sel['added_count'] = len(added_list)
@@ -1020,10 +1086,14 @@ monthly_summary = (
         excess_capital=('excess_capital', 'first'),
         funding_required=('funding_required', 'first'),
         forced_count=('forced_count', 'first'),
+        cash_weight=('cash_weight', 'first'),
+        cash_pnl=('cash_pnl', 'first'),
     ).reset_index()
 )
 
-monthly_summary['net_pnl'] = monthly_summary['gross_pnl'] + monthly_summary['removed_pnl'] - monthly_summary['cost']
+# cash_pnl is the risk-free return on capital the 10% cap could not place.
+monthly_summary['net_pnl'] = (monthly_summary['gross_pnl'] + monthly_summary['removed_pnl']
+                              + monthly_summary['cash_pnl'] - monthly_summary['cost'])
 # Denominator = the capital the fund must actually hold that month (see MIN_QTY).
 monthly_summary['return_pct'] = monthly_summary['net_pnl'] / monthly_summary['funding_required']
 monthly_summary['excess_pct'] = monthly_summary['excess_capital'] / INVESTMENT

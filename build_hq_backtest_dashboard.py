@@ -20,6 +20,7 @@ import csv
 import json
 import os
 import sys
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -244,7 +245,13 @@ def load_som_months():
     # one for the next calendar month (same basket, not yet realized) so the
     # frontend's "last row = still forming" dot doesn't instead swallow a
     # real, meaningful return.
-    if months and months[-1]["Base"] != 0.0:
+    # Only synthesize when the last row is a genuinely FINISHED month. Once the
+    # daily job starts adding days of the current month the engine returns a
+    # part-month with a non-zero return -- a 3-day September showed -1.11% --
+    # and appending a placeholder after that promoted the part-month to a
+    # realized one, straight into the CAGR.
+    _cur = datetime.now().strftime("%Y-%m")
+    if months and months[-1]["Base"] != 0.0 and months[-1]["Month"] < _cur:
         last = months[-1]
         y, mo = map(int, last["Month"].split("-"))
         next_month = f"{y + 1:04d}-01" if mo == 12 else f"{y:04d}-{mo + 1:02d}"
@@ -429,8 +436,18 @@ def main():
     # trade data yet) kept only so the heatmap renders its usual dot marker
     # instead of a colored cell -- exclude it from all statistics, same as
     # the real-portfolio pipeline already does for its own live month.
-    is_live = bool(months) and months[-1]["Base"] == 0.0 and len(months) > 1
-    realized = months[:-1] if is_live else months
+    # A month is realized only once the calendar has left it. Testing for a
+    # 0.0 return was enough while the data stopped at the month end, but the
+    # daily price job now carries part-months, which arrive with a real
+    # non-zero return and were being annualised as though complete.
+    _cur = datetime.now().strftime("%Y-%m")
+    realized = [m for m in months if m["Month"] < _cur]
+    if len(realized) < 2:                       # nothing finished yet: fall back
+        is_live = bool(months) and months[-1]["Base"] == 0.0 and len(months) > 1
+        realized = months[:-1] if is_live else months
+    elif len(realized) < len(months):
+        print(f"[hq-dash] excluding {len(months) - len(realized)} unfinished month(s) "
+              f"from statistics (last completed: {realized[-1]['Month']})")
 
     base = [m["Base"] for m in realized]
     bench = [m["Bench"] for m in realized]
