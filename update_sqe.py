@@ -11,7 +11,8 @@ this drives their replacements instead. The scheduled task has been failing
 since 31-08-2026 with "can't open file update_sqe.py".
 
     [1] prices    every per-stock folder, both indices, the CNX500 benchmark
-                  and the bullion sleeve, to the last completed session
+                  and the bullion sleeve, to the last completed session, then
+                  back-adjusts any split or bonus that went ex today
     [2] rebuild   data.js / hq_data.js / ml_data.js / holdings.js
     [3] publish   sync into the two site checkouts, commit, push
 
@@ -89,6 +90,13 @@ def main():
          "ML Forecast universe"),
         ([PY, "-u", "update_indices.py"], "indices + CNX500"),
         ([PY, "-u", "update_bullion.py"], "GOLDBEES / SILVERBEES"),
+        # After the fetchers, never before: update_stocks.py only APPENDS the
+        # new session, so a stock that went ex-bonus today lands its new price
+        # on top of an unadjusted history and the step reads downstream as a
+        # real move -- PGIL's 1:1 rendered as -50.06% on 11-09-2026.
+        ([PY, "-u", "corporate_actions.py"], "split adjustment"),
+        ([PY, "-u", "corporate_actions.py", os.path.join(ML_DIR, "NIFTY500")],
+         "split adjustment (ML universe)"),
     ]:
         if run(cmd, label=label) != 0:
             failed.append(label)
