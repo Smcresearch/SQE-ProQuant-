@@ -60,8 +60,21 @@ ELIGIBILITY_FILE = os.environ.get(
 # the stock sleeve shrinks proportionally so the two always sum to 1.0. They
 # never enter the EGP ranking (see build_metal_row) -- they're injected after
 # selection, not competed for.
-GOLD_WEIGHT      = float(os.environ.get("GOLD_WEIGHT", "0.10"))
-SILVER_WEIGHT    = float(os.environ.get("SILVER_WEIGHT", "0.10"))
+# Default to NO bullion. This engine serves two different products and they
+# must not bleed into each other:
+#
+#   SQE ProQuant  (smcresearch.github.io/SQE-ProQuant-/) runs it bare, and is an
+#                 EQUITY-ONLY product -- its High Quality tab must hold stocks
+#                 and nothing else.
+#   MAQS          (smcresearch.github.io/MAQS/) is the multi-asset product and
+#                 sets both weights explicitly in run_hq_multiasset.py.
+#
+# The defaults used to be 0.10/0.10, so a bare run silently gave SQE ProQuant a
+# 10% GOLDBEES / 10% SILVERBEES sleeve it was never meant to carry. Defaulting
+# to zero makes the equity-only case the one you get by asking for nothing, and
+# leaves MAQS untouched because it never relies on these defaults.
+GOLD_WEIGHT      = float(os.environ.get("GOLD_WEIGHT", "0"))
+SILVER_WEIGHT    = float(os.environ.get("SILVER_WEIGHT", "0"))
 METALS_WEIGHT    = GOLD_WEIGHT + SILVER_WEIGHT
 STOCK_SLEEVE     = 1.0 - METALS_WEIGHT
 GOLD_FILE        = "NSE_GOLDBEES, 1D.csv"
