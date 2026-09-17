@@ -1,5 +1,5 @@
 """
-Build the data file for the SQE MultiAsset ProQuant site (Equity + Gold + Silver).
+Build the data file for the MAQS site (All Indices, Equity + Gold + Silver).
 
 The multi-asset numbers are produced by a DIFFERENT engine than the equity-only
 SQE sites: `som_metals.py` in the shared portfolio folder runs the same EGP /
@@ -51,8 +51,10 @@ from datetime import datetime
 MAIN = os.path.dirname(os.path.abspath(__file__))
 REPORT_DIR = os.environ.get(
     "BULLION_REPORT", r"D:\Shared folder\portfolio\bullion_report")
+# The site checkout, renamed from SQE-MultiAsset-ProQuant-host when the terminal
+# became MAQS. Its git origin points at Smcresearch/MAQS; --push pushes there.
 OUT_FILE = os.environ.get(
-    "MULTIASSET_OUT", r"d:\SQE-MultiAsset-ProQuant-host\data.js")
+    "MULTIASSET_OUT", r"d:\MAQS-host\data.js")
 
 UNIVERSES = [
     {"key": "N50",  "name": "Nifty 50",    "bench": "Nifty 50"},
@@ -128,8 +130,12 @@ def main():
     # -- that's the comparison that actually needs to be apples-to-apples.
     # Windows are NOT required to match ACROSS universes: HQ's fundamental
     # screen only has data back to 2023-07 (Screener.in scrape depth), while
-    # the equity-only universes go back to 2022-06 (bounded by SILVERBEES
-    # inception) -- a real, understood difference, not a bug.
+    # the three equity universes go back to 2022-01 -- a real, understood
+    # difference, not a bug.
+    #
+    # All four universes and all four sleeves are still BUILT, because one
+    # pipeline produces them and the JSONs are shared with the PDF report. The
+    # MAQS terminal reads only T759_goldsilver out of the result.
     for u in UNIVERSES:
         u_months = None
         for v in VARIANTS:
