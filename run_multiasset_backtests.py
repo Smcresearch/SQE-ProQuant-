@@ -31,7 +31,13 @@ SHARED = os.environ.get("PORTFOLIO_SHARED", r"D:\Shared folder\portfolio")
 # Jul 30 close, before Jul 31 existed.
 DATA_ROOT = os.environ.get("MULTIASSET_DATA_ROOT", MAIN)
 
-START_MONTH = "2022-05"     # first signal month -> first trade month 2022-06
+# First SIGNAL month; its trade month is one later, so 2021-12 -> Jan 2022, the
+# start the terminal reports. SILVERBEES only lists on 2022-05-10, so the first
+# five trade months (2022-01 .. 2022-05) carry no silver at all: som_metals.py
+# hands that weight to the stock sleeve, giving gold 10% / equity 90% until
+# silver exists and gold 10% / equity 80% / silver 10% from 2022-06 on. Nothing
+# is back-filled for the months silver did not trade.
+START_MONTH = "2021-12"     # first signal month -> first trade month 2022-01
 # Last SIGNAL month = the last CALENDAR month that has closed. Hardcoding it
 # froze the live month the moment the calendar rolled over: the nightly job kept
 # re-marking a stale book instead of forming the new one. --end still overrides.

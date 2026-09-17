@@ -5,7 +5,10 @@ REM  Chained off run_daily_sqe_update.bat (17:30 IST), which refreshes the equit
 REM  CSVs first and then calls this with --noprices. Do NOT give this its own
 REM  Task Scheduler trigger: two concurrent runs of the price fetchers append the
 REM  same session twice and every backtest then dies on a duplicate date.
-REM  Publishes to: https://smcresearch.github.io/SQE-MultiAsset-ProQuant/
+REM  Publishes to: https://smcresearch.github.io/MAQS/
+REM  The site repo's `origin` now points at Smcresearch/MAQS; the previous
+REM  remote is kept as `legacy-sqe` and is no longer updated. Step [6] pushes
+REM  to whatever `origin` is, so nothing else here had to change.
 REM
 REM  What "update" means here: mark the CURRENT book to the latest close, so the
 REM  live month-to-date portfolio return and the benchmark return both move.

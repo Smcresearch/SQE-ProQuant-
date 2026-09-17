@@ -17,9 +17,21 @@ statistic from those workbooks into metrics.json / holdings.json — this script
 just merges the two into the site's data.js. Nothing is recomputed here, so the
 site can never disagree with the PDF report built from the same JSONs.
 
-Window is 2022-06 -> 2026-04 (47 months), bounded by SILVERBEES inception
-(2022-05-10). Every universe and variant uses the identical window so the
-comparison is like-for-like.
+Window opens 2022-01 for the three equity universes. It is no longer bounded by
+SILVERBEES inception: SILVERBEES lists on 2022-05-10, so the silver sleeve simply
+cannot be funded for trade months 2022-01..2022-05 and som_metals.py hands that
+weight to stocks instead —
+
+    2022-01 .. 2022-05   gold 10% | equity 90% | silver  0%
+    2022-06 onwards      gold 10% | equity 80% | silver 10%
+
+— so the book is fully invested throughout and nothing is back-filled for months
+silver did not trade. Every variant WITHIN a universe still uses an identical
+window, which is the comparison that has to be like-for-like.
+
+HQ is the exception and starts 2023-06: its fundamental screen has no
+eligibility data before that (see quarterly_eligibility.csv), which is a real
+limit of the source, not a choice.
 
 Usage:
   python build_multiasset.py                    # merge existing JSONs -> data.js

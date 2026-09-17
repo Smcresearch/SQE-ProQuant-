@@ -71,6 +71,7 @@ SILVER_SYMBOL    = "SILVERBEES"
 METAL_TARGETS = {}
 if GOLD_WEIGHT   > 0: METAL_TARGETS[GOLD_SYMBOL]   = GOLD_WEIGHT
 if SILVER_WEIGHT > 0: METAL_TARGETS[SILVER_SYMBOL] = SILVER_WEIGHT
+METAL_SYMBOLS = {GOLD_SYMBOL, SILVER_SYMBOL}
 
 # Output files
 OUTPUT_FILE      = os.environ.get("OUTPUT_FILE", "SOM_HQ_Quarterly_v2.xlsx")  # Main comprehensive report
@@ -819,9 +820,14 @@ for port_month in all_port_months:
     # Churning Analysis (Script 2) + Carry-Forward Setup (Script 1)
     # ──────────────────────────────────────────────────────────────────────
     
-    target_stocks = set(sel['symbol'].tolist())
-    prev_stocks = set(port_state.keys())
-    
+    # Churn is a STOCK-side statistic, exactly as in som_metals.py: the metals
+    # sleeve is a permanent holding that is only rebalanced, so counting it as
+    # "remained" every month understates turnover and inflates the stock count
+    # by one per funded ETF. Leaving it in made this engine's Churning Analysis
+    # sheet disagree with som_metals.py's for the same month.
+    target_stocks = set(sel['symbol'].tolist()) - METAL_SYMBOLS
+    prev_stocks = set(port_state.keys()) - METAL_SYMBOLS
+
     added_list = sorted(list(target_stocks - prev_stocks))
     removed_list = sorted(list(prev_stocks - target_stocks))
     remained_list = sorted(list(target_stocks & prev_stocks))
@@ -838,7 +844,10 @@ for port_month in all_port_months:
         'total_stocks': len(target_stocks)
     })
     
-    sel['status'] = sel['symbol'].apply(lambda x: 'Added' if x in added_list else 'Remained')
+    # 'Metal' matches som_metals.py, and is what the report extractors read to
+    # tell a bullion row from a stock one.
+    sel['status'] = sel['symbol'].apply(
+        lambda x: 'Metal' if x in METAL_SYMBOLS else ('Added' if x in added_list else 'Remained'))
     
     # ──────────────────────────────────────────────────────────────────────
     # Calculate PNL with Carry-Forward Logic (Script 1)
