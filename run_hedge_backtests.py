@@ -58,12 +58,22 @@ START_MONTH = "2020-01"
 # name -> (stocks folder under MAIN, benchmark csv, summary out, deep-dive out)
 # The output names are the ones extract_dashboard_data.py reads (its SOURCES
 # table), not som_hedge.py's "_selected" defaults.
+# Universe folders are the post-rebalance October snapshots. The older
+# nifty50_host / nifty500_host / TOTAL_STOCKS folders never picked up the NSE
+# rebalance effective 30-09-2026 -- they still carry the dropped names and none
+# of the additions -- and several of their files can never refresh again because
+# the security no longer trades under that symbol (HEG -> HEGAM demerger,
+# GSPL frozen 11-05-2026, JBCHEPHARM 23-07-2026, CIGNITITEC 14-05-2026).
+# Override per run with SQE_UNIV_<name> if a different snapshot is wanted.
 UNIVERSES = {
-    "nifty50": ("nifty50_host", os.path.join(MAIN, "NIFTY50_1d.csv"),
+    "nifty50": (os.environ.get("SQE_UNIV_NIFTY50", "nifty_50_october"),
+                os.path.join(MAIN, "NIFTY50_1d.csv"),
                 "Hedge_nifty50.xlsx", "Hedge_Institutional_Deep_Dive_nifty50.xlsx"),
-    "nifty500": ("nifty500_host", os.path.join(SHARED, "NSE_CNX500, 1D.csv"),
+    "nifty500": (os.environ.get("SQE_UNIV_NIFTY500", "nifty_500_october"),
+                 os.path.join(SHARED, "NSE_CNX500, 1D.csv"),
                  "Hedge_nifty500.xlsx", "Hedge_Institutional_Deep_Dive_nifty500.xlsx"),
-    "total759": ("TOTAL_STOCKS", os.path.join(SHARED, "NSE_CNX500, 1D.csv"),
+    "total759": (os.environ.get("SQE_UNIV_TOTAL", "TOTAL_STOCKS_October"),
+                 os.path.join(SHARED, "NSE_CNX500, 1D.csv"),
                  "Hedge_Pro_Summary_759.xlsx", "Hedge_Institutional_Deep_Dive_759.xlsx"),
 }
 

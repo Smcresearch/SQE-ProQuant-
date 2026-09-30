@@ -516,6 +516,12 @@ for universe, cfg in UNIVERSES.items():
     try:
         df_churn = pd.read_excel(xl, sheet_name='Churning_Analysis')
         df_churn['Month'] = df_churn['Month'].astype(str)
+        # The sheet ends with a "Churning Statistics Summary" block -- two blank
+        # rows, a header, then one row per layer. Those were being shipped to the
+        # site as if they were months: total759 sent 89 churning rows for 80
+        # months, the last of them labelled Month="ULTRA", so the churning chart
+        # carried entries called Base / ST / EMA / COMBO / ULTRA and two blanks.
+        df_churn = df_churn[df_churn['Month'].str.fullmatch(r'\d{4}-\d{2}', na=False)]
         churning_data = df_churn.to_dict(orient='records')
         for row in churning_data:
             for k, v in row.items():

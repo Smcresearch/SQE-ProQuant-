@@ -45,6 +45,16 @@ SHARED = os.environ.get("PORTFOLIO_SHARED", r"D:\Shared folder\portfolio")
 TV_INDICES = [
     ("^CRSLDX", "NSE_CNX500, 1D.csv"),
 ]
+# The ML Forecast pipeline keeps its OWN copies of the benchmark and bond, and
+# eod_update.py refreshes neither. It picks its window from the latest month
+# present in stock AND benchmark AND bond, so one stale file silently pins the
+# whole book: on 30-09-2026 its CNX500 still ended 2026-08-31 and the run
+# produced a SEPTEMBER book when October was due. bondyield.csv is already
+# covered by update_bondyield.py; this covers the benchmark.
+ML_BENCH_MIRROR = [
+    (os.path.join(SHARED, "NSE_CNX500, 1D.csv"),
+     r"d:\PC2546\portfolio\NSE_CNX500, 1D.csv"),
+]
 
 DRY_RUN = "--dry-run" in sys.argv
 INCLUDE_TODAY = "--include-today" in sys.argv
@@ -191,3 +201,9 @@ if __name__ == "__main__":
     _today = datetime.today().strftime(DATE_FMT)
     for _tk, _fn in TV_INDICES:
         update_tv(_tk, _fn, _drop, _today)
+    import shutil
+    for _src, _dst in ML_BENCH_MIRROR:
+        if os.path.exists(_src) and os.path.isdir(os.path.dirname(_dst)):
+            if not DRY_RUN:
+                shutil.copy2(_src, _dst)
+            print("\nmirrored " + os.path.basename(_src) + " -> " + _dst)
