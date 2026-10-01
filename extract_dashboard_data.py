@@ -6,6 +6,25 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings("ignore")
 
+# Every folder a holding's daily CSV might live in, newest universe first.
+#
+# The October snapshots have to be in here. The three *_host / TOTAL_STOCKS
+# folders predate the NSE rebalance effective 30-09-2026, so a name the
+# rebalance ADDED exists only in the October snapshot. With those folders
+# missing, ten of the All-Indices book's holdings -- SEDEMAC, MINDSPACE,
+# SHADOWFAX, OMNI, SENORES, SGMART, BIRET, E2E, EBGNG, CMPDI, together 31.9% of
+# the book -- came out with no LTP at all. That is not merely cosmetic:
+# app.js recalcPortInvest() skips a holding priced 0, so its weight dropped out
+# of the investment calculator and resurfaced as phantom "Cash Left" of
+# Rs.12,821 on a Rs.1,00,000 book.
+#
+# One list, used by every lookup below. It was previously spelled out three
+# separate times, which is why adding a universe missed two of them.
+PRICE_FOLDERS = [
+    'TOTAL_STOCKS_October', 'nifty_500_october', 'nifty_50_october',
+    'TOTAL_STOCKS', 'nifty500_host', 'nifty50_host',
+]
+
 # ============================================================
 # HELPER FUNCTIONS
 # ============================================================
@@ -223,7 +242,7 @@ def get_live_prices(symbols):
     results = {}
     for sym in symbols:
         found = False
-        for folder in ['nifty50_host', 'nifty500_host', 'TOTAL_STOCKS']:
+        for folder in PRICE_FOLDERS:
             path = os.path.join(folder, sym + '.csv') if not sym.endswith('.csv') else os.path.join(folder, sym)
             if not os.path.exists(path):
                 path2 = os.path.join(folder, sym.replace('.csv','') + '.csv')
@@ -336,6 +355,10 @@ def get_benchmark_live_and_mtd(bench_file, target_date=None):
 
 def get_sector_map():
     mapping = {}
+    # Same folder set as the price lookup, for the same reason: a stock the
+    # 30-09-2026 rebalance added lives only in the October snapshots, so reading
+    # TOTAL_STOCKS alone left SEDEMAC, MINDSPACE, SHADOWFAX, OMNI, SENORES,
+    # SGMART, BIRET, E2E, EBGNG and CMPDI all showing sector "Other".
     for f in ['ind_nifty50list.csv', 'ind_nifty500list.csv']:
         if not os.path.exists(f):
             continue
@@ -346,9 +369,10 @@ def get_sector_map():
             for _, row in df.iterrows():
                 mapping[str(row[sym_col]).strip()] = str(row[ind_col]).strip()
 
-    # Augment with the TOTAL_STOCKS (759) universe — each CSV carries Symbol/Industry.
-    tdir = 'TOTAL_STOCKS'
-    if os.path.isdir(tdir):
+    # Augment with the broad universes — each CSV carries Symbol/Industry.
+    for tdir in ('TOTAL_STOCKS', 'TOTAL_STOCKS_October'):
+        if not os.path.isdir(tdir):
+            continue
         for fn in os.listdir(tdir):
             if not fn.endswith('.csv'):
                 continue
@@ -390,7 +414,7 @@ def get_stock_correlation(symbols):
     returns_map = {}
     for sym in symbols:
         found = False
-        for folder in ['nifty50_host', 'nifty500_host', 'TOTAL_STOCKS']:
+        for folder in PRICE_FOLDERS:
             path = os.path.join(folder, sym + '.csv') if not sym.endswith('.csv') else os.path.join(folder, sym)
             if not os.path.exists(path):
                 path2 = os.path.join(folder, sym.replace('.csv','') + '.csv')
