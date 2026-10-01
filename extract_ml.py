@@ -34,6 +34,10 @@ import pandas as pd
 ML_DIR = os.environ.get("ML_PIPELINE_DIR", r"d:\PC2546\portfolio")
 SUMMARY_XLSX = os.path.join(ML_DIR, "Sharpe_ML_Forecast_NIFTY500_Summary.xlsx")
 CURRENT_XLSX = os.path.join(ML_DIR, "Current_Portfolio_ML_Forecast_NIFTY500.xlsx")
+# Per-month selection sheets (PM_<signal month>), read only for Beta/ERB on the
+# CURRENT book -- the rest of this file never trusts them, because the pipeline
+# is stochastic and a re-run rewrites past months.
+MAIN_XLSX = os.path.join(ML_DIR, "Sharpe_ML_Forecast_NIFTY500.xlsx")
 ML_DATA_JS = r"d:\Host_portfolio\ml_data.js"
 DATA_JS = r"d:\Host_portfolio\data.js"          # only for its sector_map
 
@@ -181,6 +185,157 @@ PRICE_FOLDERS = [r"d:\PC2546\portfolio\NIFTY500", "nifty500_host", "TOTAL_STOCKS
 BENCH_CSV = r"D:\Shared folder\portfolio\NSE_CNX500, 1D.csv"
 
 
+def pm_factors(signal_month):
+    """{symbol: (beta, erb)} from the pipeline's PM_<signal> sheet.
+
+    Only ever asked for the CURRENT signal month, where the sheet and the
+    published book are the same run and therefore agree.
+    """
+    try:
+        d = pd.read_excel(MAIN_XLSX, "PM_" + signal_month, header=None)
+    except Exception:                                    # noqa: BLE001
+        return {}
+    hdr = next((i for i in range(len(d))
+                if _norm(d.iloc[i, 1]) == "Symbol"), None)
+    if hdr is None:
+        return {}
+    cols = [_norm(x) for x in d.iloc[hdr]]
+    try:
+        si, bi, ei = cols.index("Symbol"), cols.index("Beta"), cols.index("ERB")
+    except ValueError:
+        return {}
+    out = {}
+    for k in range(hdr + 1, len(d)):
+        s = _norm(d.iloc[k, si])
+        # The sheet continues with a second table below the selection; stop at
+        # the first blank or the TOTAL row rather than reading into it.
+        if s in ("nan", "", "None") or s.upper() == "TOTAL":
+            break
+        try:
+            out[s] = (round(float(d.iloc[k, bi]), 3), round(float(d.iloc[k, ei]), 3))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def snapshot_rows(current, trade_month):
+    """MONTHLY_HOLDINGS rows for one month, shaped like build_holdings.py's.
+
+    'p' is the FORMATION price the weight was sized at (the trade month's open),
+    not today's ltp -- the equity tabs' snapshots carry the same thing, and
+    renderTrades differences consecutive snapshots to price each change.
+    """
+    sig = (pd.Period(trade_month, "M") - 1).strftime("%Y-%m")
+    fac = pm_factors(sig)
+    rows = []
+    for h in current:
+        s = h["clean_symbol"]
+        b, e = fac.get(s, (None, None))
+        p = h.get("book_price") or 0
+        rows.append({"s": s, "sec": h.get("sector") or "Other",
+                     "w": round((h.get("weight") or 0) * 100, 2),
+                     "p": round(p, 2) if p else None,
+                     "r": None,
+                     "st": "Added" if not h.get("prev_qty") else "Remained",
+                     "a": h.get("action") or "—", "b": b, "e": e})
+    rows.sort(key=lambda x: -(x["w"] or 0))
+    return rows
+
+
+_opens = {}
+
+
+def month_open(sym, month):
+    """First open of `month` from the local daily CSVs, or None."""
+    key = (sym, month)
+    if key in _opens:
+        return _opens[key]
+    val = None
+    for fol in PRICE_FOLDERS:
+        p = os.path.join(fol, sym + "_1d_max.csv")
+        if not os.path.exists(p):
+            continue
+        try:
+            d = pd.read_csv(p)
+        except Exception:                                # noqa: BLE001
+            continue
+        if "Date" not in d.columns or "Open" not in d.columns:
+            continue
+        dt = pd.to_datetime(d["Date"], format="%d-%m-%Y", errors="coerce")
+        sel = d[dt.dt.strftime("%Y-%m") == month]
+        if not sel.empty:
+            try:
+                val = float(sel["Open"].iloc[0])
+            except (TypeError, ValueError):
+                val = None
+        if val:
+            break
+    _opens[key] = val
+    return val
+
+
+def exit_prices():
+    """{symbol: price} for the EXIT rows of the current trade list.
+
+    A name the book drops is sold at the new month's open, and that price is on
+    its exit row. Without it, a near-total turnover month (ML routinely replaces
+    10 of 12) leaves almost every prior-month return blank, because neither the
+    new snapshot nor -- before tonight's price sync -- the CSVs can price a name
+    that is no longer held.
+    """
+    try:
+        d = pd.read_excel(CURRENT_XLSX, header=None)
+    except Exception:                                    # noqa: BLE001
+        return {}
+    hdr = next((i for i in range(len(d)) if _norm(d.iloc[i, 0]) == "Symbol"), None)
+    if hdr is None:
+        return {}
+    out = {}
+    for _, r in d.iloc[hdr + 1:].iterrows():
+        sym = _norm(r.iloc[0]).replace("_1d_max", "")
+        if sym in ("nan", "", "None"):
+            continue
+        try:
+            if float(r.iloc[3] or 0) > 0:            # still held, not an exit
+                continue
+            px = float(r.iloc[6] or 0)
+        except (TypeError, ValueError):
+            continue
+        if px > 0:
+            out[sym] = px
+    return out
+
+
+def fill_prev_returns(hold, extra_prices=None):
+    """A month's per-stock return runs from this month's formation price to the
+    next month's open -- buy-to-buy, which is when the position is actually
+    unwound.
+
+    build_holdings.py takes the next price from the next month's SNAPSHOT, which
+    silently gives up on any name that left the book: ML turns over most of its
+    book every month, so 10 of September's 12 rows came out blank. The next
+    month's open exists in the price history whether or not the name was
+    re-selected, so that is used, with the snapshot's own formation price
+    preferred when present (it is the price actually transacted).
+
+    Only rows still carrying r = None are touched, so published numbers are
+    never restated.
+    """
+    extra = extra_prices or {}
+    ms = sorted(hold)
+    for i, m in enumerate(ms[:-1]):
+        nxt_month = ms[i + 1]
+        nxt = {x["s"]: x.get("p") for x in hold[nxt_month]}
+        for row in hold[m]:
+            if row.get("r") is not None or not row.get("p"):
+                continue
+            p1 = (nxt.get(row["s"])
+                  or extra.get(nxt_month, {}).get(row["s"])
+                  or month_open(row["s"], nxt_month))
+            if p1:
+                row["r"] = round((p1 / row["p"] - 1) * 100, 2)
+
+
 def load_current():
     """current_portfolio rows from the ML trade list, priced from local CSVs."""
     from live_prices import price_symbols
@@ -225,7 +380,11 @@ def load_current():
                   "change_pct": q["change_pct"],
                   "mtd_change_pct": q["mtd_change_pct"],
                   "value": round(h["qty"] * q["ltp"], 2), "date": q["date"]})
-        h.pop("book_price")
+        # book_price is KEPT, not popped. It is the price the weight was sized
+        # at -- the trade month's open -- and snapshot_rows needs it for
+        # MONTHLY_HOLDINGS 'p'. Popping it left every October snapshot row with
+        # p = null, which in turn left September's per-stock returns unfillable
+        # (they are derived from the next month's formation price).
     return rows
 
 
@@ -279,6 +438,19 @@ def main():
         old_holdings = {}
 
     current = load_current()
+
+    # MONTHLY_HOLDINGS used to be carried forward verbatim on every run, so it
+    # simply froze: the tab's holdings snapshot still ended 2026-08 after two
+    # further books had been published, and its last entry did not even match
+    # the September book that was live, so the ML tab showed no snapshot for the
+    # current month and no exits. The equity tabs have theirs rebuilt by
+    # build_holdings.py and High Quality by build_hq_backtest_dashboard.py; this
+    # is the equivalent. Only the CURRENT month is written -- earlier months are
+    # preserved because the runs that produced them no longer exist and the
+    # pipeline is stochastic, so regenerating them would restate history.
+    live_month = months[-1]["Month"]
+    old_holdings[live_month] = snapshot_rows(current, live_month)
+    fill_prev_returns(old_holdings, {live_month: exit_prices()})
 
     payload = {
         "exec_summary": {k: {"Base": em_b[k], "Bench": em_n[k]} for k in em_b},
