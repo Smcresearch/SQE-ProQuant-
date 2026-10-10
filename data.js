@@ -19258,5 +19258,5 @@ const DASHBOARD_DATA = {
     "VISL": "Metals & Mining",
     "VOGL": "Oil Gas & Consumable Fuels"
   },
-  "last_update": "2026-10-09 18:02:28 IST"
+  "last_update": "2026-10-10 17:53:06 IST"
 };
