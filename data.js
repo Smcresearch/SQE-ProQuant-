@@ -18319,5 +18319,5 @@ const DASHBOARD_DATA = {
     "DHOOTTRANS": "Automobile and Auto Components",
     "ICICILIFE": "Financial Services"
   },
-  "last_update": "2026-11-23 18:13:21 IST"
+  "last_update": "2026-11-24 18:09:33 IST"
 };
