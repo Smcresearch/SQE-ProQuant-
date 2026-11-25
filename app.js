@@ -6,9 +6,13 @@
 const LAYERS = {
   Base:     { label: 'SQE',       color: '#22d3ee', cls: 'ltag-base' },
   Bench:    { label: 'Nifty 500', color: '#94a3b8', cls: 'ltag-bench' },
-  BenchN50: { label: 'Nifty 50',  color: '#f59e0b', cls: 'ltag-bench' }
+  BenchN50: { label: 'Nifty 50',  color: '#f59e0b', cls: 'ltag-bench' },
+  // NSE Multi Asset indices, injected from ma_bench.js (update_ma_bench.py).
+  BenchMA1: { label: 'NSE Multi Asset 50:40:10',    color: '#a78bfa', cls: 'ltag-bench' },
+  BenchMA2: { label: 'NSE Multi Asset 50:20:20:10', color: '#f472b6', cls: 'ltag-bench' }
 };
-const BENCH_KEYS = ['Bench', 'BenchN50'];
+const BENCH_KEYS = ['Bench', 'BenchN50', 'BenchMA1', 'BenchMA2'];
+const MA_KEYS = { BenchMA1: 'MA1', BenchMA2: 'MA2' };
 const isBenchKey = (l) => BENCH_KEYS.includes(l);
 
 let state = {
@@ -221,6 +225,62 @@ function injectDualBenchmark() {
       t.monthly_detail.forEach(r => { r.BenchN50 = byMonth[String(r.Month).slice(0, 7)]; });
     }
   });
+  injectMultiAssetBenchmarks();
+}
+
+/* NSE Multi Asset benchmarks on every universe: monthly return, equity curve and
+   metrics over the universe's own completed months. The live month has no index
+   return yet, so it stays flat on the curve, like the 0/0 live row. Idempotent. */
+function injectMultiAssetBenchmarks() {
+  if (typeof MA_BENCH === 'undefined') return;
+  ['nifty50', 'nifty500', 'total759', 'ml_forecast', 'high_quality'].forEach(u => {
+    const t = DASHBOARD_DATA[u];
+    if (!t || t.__maBench || !Array.isArray(t.monthly_detail)) return;
+    t.__maBench = true;
+    Object.entries(MA_KEYS).forEach(([layer, key]) => {
+      const rets = MA_BENCH[key].rets;
+      const done = [];
+      t.monthly_detail.forEach(r => {
+        const v = rets[String(r.Month).slice(0, 7)];
+        r[layer] = v ?? null;
+        if (v != null) done.push(v);
+      });
+      if (t.equity_curves) {
+        let g = 1;
+        t.equity_curves[layer] = (t.equity_curves.months || []).map(mo => (g *= 1 + (rets[mo] ?? 0)));
+      }
+      if (t.layer_metrics && done.length) t.layer_metrics[layer] = benchMetrics(done);
+    });
+  });
+}
+
+/* Port of extract_dashboard_data.compute_metrics(bench, bench) — the same
+   formulas the Python side uses for every other benchmark row. */
+function benchMetrics(r, rfAnnual = 0.06) {
+  const n = r.length, mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+  const sd = a => a.length > 1 ? Math.sqrt(a.reduce((s, x) => s + (x - mean(a)) ** 2, 0) / (a.length - 1)) : 0;
+  let g = 1;
+  const eq = r.map(x => (g *= 1 + x));
+  const cagr = eq[n - 1] ** (12 / n) - 1, vol = sd(r) * Math.sqrt(12);
+  let peak = -Infinity, mdd = 0, troughI = 0, peakAtTrough = 1;
+  eq.forEach((v, i) => {
+    peak = Math.max(peak, v);
+    if (v / peak - 1 < mdd) { mdd = v / peak - 1; troughI = i; peakAtTrough = peak; }
+  });
+  const hit = eq.findIndex((v, i) => i >= troughI && v >= peakAtTrough);
+  const neg = r.filter(x => x < 0), pos = r.filter(x => x > 0);
+  const down = sd(neg) * Math.sqrt(12);
+  const rd = (x, k = 2) => +x.toFixed(k);
+  return {
+    CAGR: rd(cagr * 100), Volatility: rd(vol * 100),
+    Sharpe: rd(vol > 0 ? (cagr - rfAnnual) / vol : 0),
+    Sortino: rd(down > 0 ? (cagr - rfAnnual) / down : 0),
+    Calmar: rd(mdd ? cagr / Math.abs(mdd) : 0), Max_DD: rd(mdd * 100),
+    Recovery_Months: hit >= 0 ? hit - troughI : n - 1 - troughI, Recovery_Ongoing: hit < 0,
+    Win_Rate: rd(pos.length / n * 100, 1),
+    Avg_Gain: rd(pos.length ? mean(pos) * 100 : 0), Avg_Loss: rd(neg.length ? mean(neg) * 100 : 0),
+    Alpha: rd((cagr - mean(r) * 12) * 100), Total_Return: rd((eq[n - 1] - 1) * 100)
+  };
 }
 
 /* ── RENDER ROUTER ───────────────────────────── */
@@ -313,7 +373,7 @@ function renderOverview(d) {
        x:{grid:{display:false},ticks:{color:'#64748b'}}} });
 
   // Win rate bar — Base SIM + both benchmarks
-  const layers7 = Object.keys(LAYERS);
+  const layers7 = Object.keys(LAYERS).filter(l => d.layer_metrics[l]);
   mkChart('winRateChart', 'bar', {
     labels: layers7.map(l => LAYERS[l].label),
     datasets: [{ label: 'Win Rate %', data: layers7.map(l => d.layer_metrics[l].Win_Rate),
@@ -439,6 +499,8 @@ function openHeatModal(monthStr) {
   const fmtPct = (x) => x !== null ? (x >= 0 ? '+' : '') + x + '%' : 'N/A';
   const n50Val  = benchOf('nifty50');
   const n500Val = benchOf('nifty500');
+  const maOf = (k) => { const v = typeof MA_BENCH !== 'undefined' ? MA_BENCH[k].rets[monthStr] : null;
+                        return v != null ? +(v * 100).toFixed(2) : null; };
 
   const bodyEl = document.getElementById('modal-body');
   const layers7 = Object.keys(LAYERS).filter(l => !isBenchKey(l));
@@ -579,7 +641,7 @@ function openHeatModal(monthStr) {
     </div>`;
 
   bodyEl.innerHTML = `
-    <div class="modal-row" style="background:rgba(34,211,238,0.05);border-radius:.5rem;padding:.75rem;grid-template-columns:repeat(4,1fr)">
+    <div class="modal-row" style="background:rgba(34,211,238,0.05);border-radius:.5rem;padding:.75rem;grid-template-columns:repeat(3,1fr)">
       <div>
         <div class="modal-metric">Nifty 50</div>
         <div class="modal-val" style="color:#94a3b8">${fmtPct(n50Val)}</div>
@@ -587,6 +649,14 @@ function openHeatModal(monthStr) {
       <div>
         <div class="modal-metric">Nifty 500</div>
         <div class="modal-val" style="color:#94a3b8">${fmtPct(n500Val)}</div>
+      </div>
+      <div>
+        <div class="modal-metric">NSE Multi Asset 50:40:10</div>
+        <div class="modal-val" style="color:#a78bfa">${fmtPct(maOf('MA1'))}</div>
+      </div>
+      <div>
+        <div class="modal-metric">NSE Multi Asset 50:20:20:10</div>
+        <div class="modal-val" style="color:#f472b6">${fmtPct(maOf('MA2'))}</div>
       </div>
       <div>
         <div class="modal-metric">Portfolio Beta</div>
@@ -1081,6 +1151,14 @@ function renderExecTable(d) {
                                isBench: false, get: m => summary[m]?.[l] })),
     { label: 'Nifty 50',  cls: 'ltag-bench', isBench: true, get: m => n50?.[m]?.Bench },
     { label: 'Nifty 500', cls: 'ltag-bench', isBench: true, get: m => n500?.[m]?.Bench },
+    // Multi Asset columns: this universe's window, from the injected layer_metrics
+    // (percent units there, fractions here). Metrics not derived for them show '—'.
+    ...Object.keys(MA_KEYS).map(l => ({ label: LAYERS[l].label, cls: 'ltag-bench', isBench: true,
+      get: m => { const x = d.layer_metrics[l]; if (!x) return null;
+        const map = { CAGR: x.CAGR / 100, XIRR: x.CAGR / 100, 'Abs Return': x.Total_Return / 100,
+          Volatility: x.Volatility / 100, 'Max Drawdown': x.Max_DD / 100, Calmar: x.Calmar,
+          'Win Rate': x.Win_Rate / 100, 'Avg Gain': x.Avg_Gain / 100, 'Avg Loss': x.Avg_Loss / 100 };
+        return map[m] ?? null; } })),
   ];
 
   const pctMetrics = ['CAGR','XIRR','Volatility','Alpha vs Bench','Max Drawdown',
