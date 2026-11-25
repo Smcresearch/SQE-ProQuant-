@@ -2,24 +2,24 @@ const DASHBOARD_DATA = {
   "nifty50": {
     "exec_summary": {
       "CAGR": {
-        "Base": 0.162175,
-        "ST": 0.147097,
-        "EMA": 0.184581,
-        "COMBO": 0.147097,
-        "ULTRA": 0.147097,
-        "COMBO_HEDGE": 0.110439,
-        "ULTRA_HEDGE": 0.110439,
-        "Bench": 0.0
+        "Base": 0.164334,
+        "ST": 0.149042,
+        "EMA": 0.187061,
+        "COMBO": 0.149042,
+        "ULTRA": 0.149042,
+        "COMBO_HEDGE": 0.111876,
+        "ULTRA_HEDGE": 0.111876,
+        "Bench": 0.102074
       },
       "XIRR": {
-        "Base": 0.162175,
-        "ST": 0.147097,
-        "EMA": 0.184581,
-        "COMBO": 0.147097,
-        "ULTRA": 0.147097,
-        "COMBO_HEDGE": 0.110439,
-        "ULTRA_HEDGE": 0.110439,
-        "Bench": 0.0
+        "Base": 0.164334,
+        "ST": 0.149042,
+        "EMA": 0.187061,
+        "COMBO": 0.149042,
+        "ULTRA": 0.149042,
+        "COMBO_HEDGE": 0.111876,
+        "ULTRA_HEDGE": 0.111876,
+        "Bench": 0.102074
       },
       "Abs Return": {
         "Base": 1.792694,
@@ -29,67 +29,67 @@ const DASHBOARD_DATA = {
         "ULTRA": 1.554278,
         "COMBO_HEDGE": 1.04588,
         "ULTRA_HEDGE": 1.04588,
-        "Bench": 0.0
+        "Bench": 0.927178
       },
       "Alpha vs Bench": {
-        "Base": 0.061407,
-        "ST": 0.046329,
-        "EMA": 0.083813,
-        "COMBO": 0.046329,
-        "ULTRA": 0.046329,
-        "COMBO_HEDGE": 0.009671,
-        "ULTRA_HEDGE": 0.009671,
+        "Base": 0.06226,
+        "ST": 0.046969,
+        "EMA": 0.084987,
+        "COMBO": 0.046969,
+        "ULTRA": 0.046969,
+        "COMBO_HEDGE": 0.009802,
+        "ULTRA_HEDGE": 0.009802,
         "Bench": 0.0
       },
       "Volatility": {
-        "Base": 0.222981,
-        "ST": 0.188404,
-        "EMA": 0.2014,
-        "COMBO": 0.188404,
-        "ULTRA": 0.188404,
-        "COMBO_HEDGE": 0.146065,
-        "ULTRA_HEDGE": 0.146065,
-        "Bench": 0.0
+        "Base": 0.224297,
+        "ST": 0.18951,
+        "EMA": 0.20256,
+        "COMBO": 0.18951,
+        "ULTRA": 0.18951,
+        "COMBO_HEDGE": 0.146927,
+        "ULTRA_HEDGE": 0.146927,
+        "Bench": 0.179049
       },
       "Downside Dev": {
-        "Base": 0.26336,
-        "ST": 0.231917,
-        "EMA": 0.224514,
-        "COMBO": 0.231917,
-        "ULTRA": 0.231917,
-        "COMBO_HEDGE": 0.144016,
-        "ULTRA_HEDGE": 0.144016,
-        "Bench": 0.0
+        "Base": 0.197331,
+        "ST": 0.175253,
+        "EMA": 0.168684,
+        "COMBO": 0.175253,
+        "ULTRA": 0.175253,
+        "COMBO_HEDGE": 0.093961,
+        "ULTRA_HEDGE": 0.093961,
+        "Bench": 0.146466
       },
       "Sharpe": {
-        "Base": 0.458224,
-        "ST": 0.462289,
-        "EMA": 0.618575,
-        "COMBO": 0.462289,
-        "ULTRA": 0.462289,
-        "COMBO_HEDGE": 0.345317,
-        "ULTRA_HEDGE": 0.345317,
-        "Bench": 0.0
+        "Base": 0.46516,
+        "ST": 0.469856,
+        "EMA": 0.627277,
+        "COMBO": 0.469856,
+        "ULTRA": 0.469856,
+        "COMBO_HEDGE": 0.353072,
+        "ULTRA_HEDGE": 0.353072,
+        "Bench": 0.234984
       },
       "Sortino": {
-        "Base": 0.387969,
-        "ST": 0.375553,
-        "EMA": 0.554893,
-        "COMBO": 0.375553,
-        "ULTRA": 0.375553,
-        "COMBO_HEDGE": 0.35023,
-        "ULTRA_HEDGE": 0.35023,
-        "Bench": 0.0
+        "Base": 0.528725,
+        "ST": 0.508079,
+        "EMA": 0.753248,
+        "COMBO": 0.508079,
+        "ULTRA": 0.508079,
+        "COMBO_HEDGE": 0.552103,
+        "ULTRA_HEDGE": 0.552103,
+        "Bench": 0.287259
       },
       "Calmar": {
-        "Base": 0.55424,
-        "ST": 0.575156,
-        "EMA": 0.728995,
-        "COMBO": 0.575156,
-        "ULTRA": 0.575156,
-        "COMBO_HEDGE": 0.627569,
-        "ULTRA_HEDGE": 0.627569,
-        "Bench": 0.0
+        "Base": 0.561617,
+        "ST": 0.582762,
+        "EMA": 0.738789,
+        "COMBO": 0.582762,
+        "ULTRA": 0.582762,
+        "COMBO_HEDGE": 0.635735,
+        "ULTRA_HEDGE": 0.635735,
+        "Bench": 0.439095
       },
       "Max Drawdown": {
         "Base": -0.292608,
@@ -99,37 +99,37 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.255752,
         "COMBO_HEDGE": -0.175979,
         "ULTRA_HEDGE": -0.175979,
-        "Bench": 0.0
+        "Bench": -0.232464
       },
       "DD Duration (M)": {
-        "Base": 13.0,
-        "ST": 10.0,
-        "EMA": 16.0,
-        "COMBO": 10.0,
-        "ULTRA": 10.0,
-        "COMBO_HEDGE": 26.0,
-        "ULTRA_HEDGE": 26.0,
-        "Bench": 0.0
+        "Base": 1.0,
+        "ST": 1.0,
+        "EMA": 1.0,
+        "COMBO": 1.0,
+        "ULTRA": 1.0,
+        "COMBO_HEDGE": 3.0,
+        "ULTRA_HEDGE": 3.0,
+        "Bench": 1.0
       },
       "VaR 95%": {
-        "Base": -0.083366,
-        "ST": -0.060105,
-        "EMA": -0.064421,
-        "COMBO": -0.060105,
-        "ULTRA": -0.060105,
-        "COMBO_HEDGE": -0.058812,
-        "ULTRA_HEDGE": -0.058812,
-        "Bench": 0.0
+        "Base": -0.084341,
+        "ST": -0.060279,
+        "EMA": -0.064842,
+        "COMBO": -0.060279,
+        "ULTRA": -0.060279,
+        "COMBO_HEDGE": -0.058941,
+        "ULTRA_HEDGE": -0.058941,
+        "Bench": -0.060628
       },
       "VaR 99%": {
-        "Base": -0.169188,
-        "ST": -0.12252,
-        "EMA": -0.122035,
-        "COMBO": -0.12252,
-        "ULTRA": -0.12252,
-        "COMBO_HEDGE": -0.088839,
-        "ULTRA_HEDGE": -0.088839,
-        "Bench": 0.0
+        "Base": -0.170712,
+        "ST": -0.124165,
+        "EMA": -0.123654,
+        "COMBO": -0.124165,
+        "ULTRA": -0.124165,
+        "COMBO_HEDGE": -0.08908,
+        "ULTRA_HEDGE": -0.08908,
+        "Bench": -0.136958
       },
       "CVaR 95%": {
         "Base": -0.140793,
@@ -139,7 +139,7 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.115651,
         "COMBO_HEDGE": -0.078992,
         "ULTRA_HEDGE": -0.078992,
-        "Bench": 0.0
+        "Bench": -0.106388
       },
       "CVaR 99%": {
         "Base": -0.292608,
@@ -149,27 +149,27 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.255752,
         "COMBO_HEDGE": -0.108411,
         "ULTRA_HEDGE": -0.108411,
-        "Bench": 0.0
+        "Bench": -0.232464
       },
       "Info Ratio": {
-        "Base": 0.45501,
-        "ST": 0.400665,
-        "EMA": 0.722912,
-        "COMBO": 0.400665,
-        "ULTRA": 0.400665,
-        "COMBO_HEDGE": 0.055581,
-        "ULTRA_HEDGE": 0.055581,
+        "Base": 0.482546,
+        "ST": 0.382072,
+        "EMA": 0.684254,
+        "COMBO": 0.382072,
+        "ULTRA": 0.382072,
+        "COMBO_HEDGE": 0.017964,
+        "ULTRA_HEDGE": 0.017964,
         "Bench": 0.0
       },
       "Win Rate": {
-        "Base": 0.646341,
-        "ST": 0.670732,
-        "EMA": 0.646341,
-        "COMBO": 0.670732,
-        "ULTRA": 0.670732,
-        "COMBO_HEDGE": 0.621951,
-        "ULTRA_HEDGE": 0.621951,
-        "Bench": 0.0
+        "Base": 0.654321,
+        "ST": 0.679012,
+        "EMA": 0.654321,
+        "COMBO": 0.679012,
+        "ULTRA": 0.679012,
+        "COMBO_HEDGE": 0.62963,
+        "ULTRA_HEDGE": 0.62963,
+        "Bench": 0.580247
       },
       "Profit Factor": {
         "Base": 1.840555,
@@ -179,17 +179,17 @@ const DASHBOARD_DATA = {
         "ULTRA": 1.915003,
         "COMBO_HEDGE": 1.8264,
         "ULTRA_HEDGE": 1.8264,
-        "Bench": 0.0
+        "Bench": 1.67022
       },
       "Expectancy": {
-        "Base": 0.01415,
-        "ST": 0.012495,
-        "EMA": 0.01542,
-        "COMBO": 0.012495,
-        "ULTRA": 0.012495,
-        "COMBO_HEDGE": 0.009254,
-        "ULTRA_HEDGE": 0.009254,
-        "Bench": 0.0
+        "Base": 0.01496,
+        "ST": 0.013204,
+        "EMA": 0.01615,
+        "COMBO": 0.013204,
+        "ULTRA": 0.013204,
+        "COMBO_HEDGE": 0.009762,
+        "ULTRA_HEDGE": 0.009762,
+        "Bench": 0.0095
       },
       "Avg Gain": {
         "Base": 0.050063,
@@ -199,7 +199,7 @@ const DASHBOARD_DATA = {
         "ULTRA": 0.040698,
         "COMBO_HEDGE": 0.034265,
         "ULTRA_HEDGE": 0.034265,
-        "Bench": 0.0
+        "Bench": 0.040799
       },
       "Avg Loss": {
         "Base": -0.051486,
@@ -209,27 +209,27 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.044957,
         "COMBO_HEDGE": -0.031894,
         "ULTRA_HEDGE": -0.031894,
-        "Bench": 0.0
+        "Bench": -0.033768
       },
       "Rolling 1Y": {
-        "Base": -0.097331,
-        "ST": -0.094788,
-        "EMA": -0.098906,
-        "COMBO": -0.094788,
-        "ULTRA": -0.094788,
-        "COMBO_HEDGE": -0.089637,
-        "ULTRA_HEDGE": -0.089637,
-        "Bench": 0.0
+        "Base": -0.223919,
+        "ST": -0.09472,
+        "EMA": -0.098946,
+        "COMBO": -0.09472,
+        "ULTRA": -0.09472,
+        "COMBO_HEDGE": -0.089569,
+        "ULTRA_HEDGE": -0.089569,
+        "Bench": -0.103763
       },
       "Rolling 3Y": {
-        "Base": 0.20507,
-        "ST": 0.380158,
-        "EMA": 0.393417,
-        "COMBO": 0.380158,
-        "ULTRA": 0.380158,
-        "COMBO_HEDGE": 0.119591,
-        "ULTRA_HEDGE": 0.119591,
-        "Bench": 0.0
+        "Base": 0.318487,
+        "ST": 0.504649,
+        "EMA": 0.524561,
+        "COMBO": 0.504649,
+        "ULTRA": 0.504649,
+        "COMBO_HEDGE": 0.220578,
+        "ULTRA_HEDGE": 0.220578,
+        "Bench": 0.208259
       },
       "Best Month": {
         "Base": 0.114249,
@@ -239,7 +239,7 @@ const DASHBOARD_DATA = {
         "ULTRA": 0.110981,
         "COMBO_HEDGE": 0.110981,
         "ULTRA_HEDGE": 0.110981,
-        "Bench": 0.0
+        "Bench": 0.1468
       },
       "Worst Month": {
         "Base": -0.292608,
@@ -249,7 +249,7 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.255752,
         "COMBO_HEDGE": -0.108411,
         "ULTRA_HEDGE": -0.108411,
-        "Bench": 0.0
+        "Bench": -0.232464
       },
       "Avg Ex-Ante Sharpe": {
         "Base": 2.028389,
@@ -5396,24 +5396,24 @@ const DASHBOARD_DATA = {
   "nifty500": {
     "exec_summary": {
       "CAGR": {
-        "Base": 0.300858,
-        "ST": 0.185042,
-        "EMA": 0.288009,
-        "COMBO": 0.187532,
-        "ULTRA": 0.187532,
-        "COMBO_HEDGE": 0.155377,
-        "ULTRA_HEDGE": 0.155377,
-        "Bench": 0.0
+        "Base": 0.305089,
+        "ST": 0.187528,
+        "EMA": 0.292039,
+        "COMBO": 0.190054,
+        "ULTRA": 0.190054,
+        "COMBO_HEDGE": 0.157439,
+        "ULTRA_HEDGE": 0.157439,
+        "Bench": 0.125439
       },
       "XIRR": {
-        "Base": 0.300858,
-        "ST": 0.185042,
-        "EMA": 0.288009,
-        "COMBO": 0.187532,
-        "ULTRA": 0.187532,
-        "COMBO_HEDGE": 0.155377,
-        "ULTRA_HEDGE": 0.155377,
-        "Bench": 0.0
+        "Base": 0.305089,
+        "ST": 0.187528,
+        "EMA": 0.292039,
+        "COMBO": 0.190054,
+        "ULTRA": 0.190054,
+        "COMBO_HEDGE": 0.157439,
+        "ULTRA_HEDGE": 0.157439,
+        "Bench": 0.125439
       },
       "Abs Return": {
         "Base": 5.033527,
@@ -5423,67 +5423,67 @@ const DASHBOARD_DATA = {
         "ULTRA": 2.2365,
         "COMBO_HEDGE": 1.682955,
         "ULTRA_HEDGE": 1.682955,
-        "Bench": 0.0
+        "Bench": 1.220353
       },
       "Alpha vs Bench": {
-        "Base": 0.17704,
-        "ST": 0.061224,
-        "EMA": 0.164191,
-        "COMBO": 0.063714,
-        "ULTRA": 0.063714,
-        "COMBO_HEDGE": 0.03156,
-        "ULTRA_HEDGE": 0.03156,
+        "Base": 0.179651,
+        "ST": 0.06209,
+        "EMA": 0.166601,
+        "COMBO": 0.064616,
+        "ULTRA": 0.064616,
+        "COMBO_HEDGE": 0.032001,
+        "ULTRA_HEDGE": 0.032001,
         "Bench": 0.0
       },
       "Volatility": {
-        "Base": 0.218423,
-        "ST": 0.16955,
-        "EMA": 0.20879,
-        "COMBO": 0.168543,
-        "ULTRA": 0.168543,
-        "COMBO_HEDGE": 0.13757,
-        "ULTRA_HEDGE": 0.13757,
-        "Bench": 0.0
+        "Base": 0.219582,
+        "ST": 0.1705,
+        "EMA": 0.209897,
+        "COMBO": 0.169484,
+        "ULTRA": 0.169484,
+        "COMBO_HEDGE": 0.138336,
+        "ULTRA_HEDGE": 0.138336,
+        "Bench": 0.18718
       },
       "Downside Dev": {
-        "Base": 0.224743,
-        "ST": 0.187358,
-        "EMA": 0.218411,
-        "COMBO": 0.185382,
-        "ULTRA": 0.185382,
-        "COMBO_HEDGE": 0.126151,
-        "ULTRA_HEDGE": 0.126151,
-        "Bench": 0.0
+        "Base": 0.163118,
+        "ST": 0.128996,
+        "EMA": 0.162857,
+        "COMBO": 0.128373,
+        "ULTRA": 0.128373,
+        "COMBO_HEDGE": 0.088175,
+        "ULTRA_HEDGE": 0.088175,
+        "Bench": 0.159598
       },
       "Sharpe": {
-        "Base": 1.102714,
-        "ST": 0.737492,
-        "EMA": 1.092049,
-        "COMBO": 0.756671,
-        "ULTRA": 0.756671,
-        "COMBO_HEDGE": 0.693303,
-        "ULTRA_HEDGE": 0.693303,
-        "Bench": 0.0
+        "Base": 1.11616,
+        "ST": 0.747965,
+        "EMA": 1.105491,
+        "COMBO": 0.767353,
+        "ULTRA": 0.767353,
+        "COMBO_HEDGE": 0.704368,
+        "ULTRA_HEDGE": 0.704368,
+        "Bench": 0.349602
       },
       "Sortino": {
-        "Base": 1.071703,
-        "ST": 0.667393,
-        "EMA": 1.043944,
-        "COMBO": 0.68794,
-        "ULTRA": 0.68794,
-        "COMBO_HEDGE": 0.75606,
-        "ULTRA_HEDGE": 0.75606,
-        "Bench": 0.0
+        "Base": 1.502523,
+        "ST": 0.988621,
+        "EMA": 1.424803,
+        "COMBO": 1.013097,
+        "ULTRA": 1.013097,
+        "COMBO_HEDGE": 1.105066,
+        "ULTRA_HEDGE": 1.105066,
+        "Bench": 0.410021
       },
       "Calmar": {
-        "Base": 1.315916,
-        "ST": 0.987217,
-        "EMA": 1.365977,
-        "COMBO": 1.000501,
-        "ULTRA": 1.000501,
-        "COMBO_HEDGE": 0.790402,
-        "ULTRA_HEDGE": 0.790402,
-        "Bench": 0.0
+        "Base": 1.334422,
+        "ST": 1.000483,
+        "EMA": 1.385095,
+        "COMBO": 1.013959,
+        "ULTRA": 1.013959,
+        "COMBO_HEDGE": 0.800891,
+        "ULTRA_HEDGE": 0.800891,
+        "Bench": 0.517374
       },
       "Max Drawdown": {
         "Base": -0.22863,
@@ -5493,37 +5493,37 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.187438,
         "COMBO_HEDGE": -0.19658,
         "ULTRA_HEDGE": -0.19658,
-        "Bench": 0.0
+        "Bench": -0.242452
       },
       "DD Duration (M)": {
-        "Base": 21.0,
-        "ST": 21.0,
-        "EMA": 21.0,
-        "COMBO": 21.0,
-        "ULTRA": 21.0,
-        "COMBO_HEDGE": 23.0,
-        "ULTRA_HEDGE": 23.0,
-        "Bench": 0.0
+        "Base": 10.0,
+        "ST": 2.0,
+        "EMA": 1.0,
+        "COMBO": 2.0,
+        "ULTRA": 2.0,
+        "COMBO_HEDGE": 4.0,
+        "ULTRA_HEDGE": 4.0,
+        "Bench": 1.0
       },
       "VaR 95%": {
-        "Base": -0.072934,
-        "ST": -0.063903,
-        "EMA": -0.070875,
-        "COMBO": -0.063187,
-        "ULTRA": -0.063187,
-        "COMBO_HEDGE": -0.043059,
-        "ULTRA_HEDGE": -0.043059,
-        "Bench": 0.0
+        "Base": -0.073392,
+        "ST": -0.063935,
+        "EMA": -0.071009,
+        "COMBO": -0.0633,
+        "ULTRA": -0.0633,
+        "COMBO_HEDGE": -0.043135,
+        "ULTRA_HEDGE": -0.043135,
+        "Bench": -0.063419
       },
       "VaR 99%": {
-        "Base": -0.149361,
-        "ST": -0.12642,
-        "EMA": -0.145726,
-        "COMBO": -0.12642,
-        "ULTRA": -0.12642,
-        "COMBO_HEDGE": -0.081903,
-        "ULTRA_HEDGE": -0.081903,
-        "Bench": 0.0
+        "Base": -0.150131,
+        "ST": -0.126681,
+        "EMA": -0.14653,
+        "COMBO": -0.126681,
+        "ULTRA": -0.126681,
+        "COMBO_HEDGE": -0.082361,
+        "ULTRA_HEDGE": -0.082361,
+        "Bench": -0.139614
       },
       "CVaR 95%": {
         "Base": -0.118913,
@@ -5533,7 +5533,7 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.095335,
         "COMBO_HEDGE": -0.068057,
         "ULTRA_HEDGE": -0.068057,
-        "Bench": 0.0
+        "Bench": -0.112544
       },
       "CVaR 99%": {
         "Base": -0.211709,
@@ -5543,27 +5543,27 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.147582,
         "COMBO_HEDGE": -0.118959,
         "ULTRA_HEDGE": -0.118959,
-        "Bench": 0.0
+        "Bench": -0.242452
       },
       "Info Ratio": {
-        "Base": 1.177198,
-        "ST": 0.459021,
-        "EMA": 1.190216,
-        "COMBO": 0.478374,
-        "ULTRA": 0.478374,
-        "COMBO_HEDGE": 0.169344,
-        "ULTRA_HEDGE": 0.169344,
+        "Base": 1.035202,
+        "ST": 0.378349,
+        "EMA": 1.039647,
+        "COMBO": 0.393692,
+        "ULTRA": 0.393692,
+        "COMBO_HEDGE": 0.105214,
+        "ULTRA_HEDGE": 0.105214,
         "Bench": 0.0
       },
       "Win Rate": {
-        "Base": 0.670732,
-        "ST": 0.695122,
-        "EMA": 0.682927,
-        "COMBO": 0.695122,
-        "ULTRA": 0.695122,
-        "COMBO_HEDGE": 0.634146,
-        "ULTRA_HEDGE": 0.634146,
-        "Bench": 0.0
+        "Base": 0.679012,
+        "ST": 0.703704,
+        "EMA": 0.691358,
+        "COMBO": 0.703704,
+        "ULTRA": 0.703704,
+        "COMBO_HEDGE": 0.641975,
+        "ULTRA_HEDGE": 0.641975,
+        "Bench": 0.617284
       },
       "Profit Factor": {
         "Base": 2.670863,
@@ -5573,17 +5573,17 @@ const DASHBOARD_DATA = {
         "ULTRA": 2.35476,
         "COMBO_HEDGE": 2.376032,
         "ULTRA_HEDGE": 2.376032,
-        "Bench": 0.0
+        "Bench": 1.801436
       },
       "Expectancy": {
-        "Base": 0.023589,
-        "ST": 0.014949,
-        "EMA": 0.022605,
-        "COMBO": 0.01512,
-        "ULTRA": 0.01512,
-        "COMBO_HEDGE": 0.012558,
-        "ULTRA_HEDGE": 0.012558,
-        "Bench": 0.0
+        "Base": 0.024443,
+        "ST": 0.015627,
+        "EMA": 0.023415,
+        "COMBO": 0.015792,
+        "ULTRA": 0.015792,
+        "COMBO_HEDGE": 0.01304,
+        "ULTRA_HEDGE": 0.01304,
+        "Bench": 0.011396
       },
       "Avg Gain": {
         "Base": 0.057543,
@@ -5593,7 +5593,7 @@ const DASHBOARD_DATA = {
         "ULTRA": 0.039007,
         "COMBO_HEDGE": 0.035074,
         "ULTRA_HEDGE": 0.035074,
-        "Bench": 0.0
+        "Bench": 0.041496
       },
       "Avg Loss": {
         "Base": -0.045575,
@@ -5603,27 +5603,27 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.039342,
         "COMBO_HEDGE": -0.026469,
         "ULTRA_HEDGE": -0.026469,
-        "Bench": 0.0
+        "Bench": -0.037154
       },
       "Rolling 1Y": {
-        "Base": 0.199979,
-        "ST": 0.020972,
-        "EMA": 0.149109,
-        "COMBO": 0.032139,
-        "ULTRA": 0.032139,
-        "COMBO_HEDGE": 0.048613,
-        "ULTRA_HEDGE": 0.048613,
-        "Bench": 0.0
+        "Base": 0.161901,
+        "ST": -0.012619,
+        "EMA": 0.11325,
+        "COMBO": -0.001277,
+        "ULTRA": -0.001277,
+        "COMBO_HEDGE": 0.014665,
+        "ULTRA_HEDGE": 0.014665,
+        "Bench": -0.076528
       },
       "Rolling 3Y": {
-        "Base": 0.926438,
-        "ST": 0.488516,
-        "EMA": 0.794196,
-        "COMBO": 0.507844,
-        "ULTRA": 0.507844,
-        "COMBO_HEDGE": 0.316127,
-        "ULTRA_HEDGE": 0.316127,
-        "Bench": 0.0
+        "Base": 1.125153,
+        "ST": 0.635477,
+        "EMA": 0.973701,
+        "COMBO": 0.656714,
+        "ULTRA": 0.656714,
+        "COMBO_HEDGE": 0.446069,
+        "ULTRA_HEDGE": 0.446069,
+        "Bench": 0.303242
       },
       "Best Month": {
         "Base": 0.163759,
@@ -5633,7 +5633,7 @@ const DASHBOARD_DATA = {
         "ULTRA": 0.130619,
         "COMBO_HEDGE": 0.112356,
         "ULTRA_HEDGE": 0.112356,
-        "Bench": 0.0
+        "Bench": 0.145232
       },
       "Worst Month": {
         "Base": -0.211709,
@@ -5643,7 +5643,7 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.147582,
         "COMBO_HEDGE": -0.118959,
         "ULTRA_HEDGE": -0.118959,
-        "Bench": 0.0
+        "Bench": -0.242452
       },
       "Avg Ex-Ante Sharpe": {
         "Base": 4.53075,
@@ -11249,24 +11249,24 @@ const DASHBOARD_DATA = {
   "total759": {
     "exec_summary": {
       "CAGR": {
-        "Base": 0.419089,
-        "ST": 0.2754,
-        "EMA": 0.390242,
-        "COMBO": 0.279808,
-        "ULTRA": 0.279808,
-        "COMBO_HEDGE": 0.254683,
-        "ULTRA_HEDGE": 0.249456,
-        "Bench": 0.0
+        "Base": 0.425234,
+        "ST": 0.279236,
+        "EMA": 0.395909,
+        "COMBO": 0.283712,
+        "ULTRA": 0.283712,
+        "COMBO_HEDGE": 0.258202,
+        "ULTRA_HEDGE": 0.252896,
+        "Bench": 0.125439
       },
       "XIRR": {
-        "Base": 0.419089,
-        "ST": 0.2754,
-        "EMA": 0.390242,
-        "COMBO": 0.279808,
-        "ULTRA": 0.279808,
-        "COMBO_HEDGE": 0.254683,
-        "ULTRA_HEDGE": 0.249456,
-        "Bench": 0.0
+        "Base": 0.425234,
+        "ST": 0.279236,
+        "EMA": 0.395909,
+        "COMBO": 0.283712,
+        "ULTRA": 0.283712,
+        "COMBO_HEDGE": 0.258202,
+        "ULTRA_HEDGE": 0.252896,
+        "Bench": 0.125439
       },
       "Abs Return": {
         "Base": 9.932811,
@@ -11276,67 +11276,67 @@ const DASHBOARD_DATA = {
         "ULTRA": 4.397044,
         "COMBO_HEDGE": 3.713202,
         "ULTRA_HEDGE": 3.580641,
-        "Bench": 0.0
+        "Bench": 1.220353
       },
       "Alpha vs Bench": {
-        "Base": 0.295271,
-        "ST": 0.151582,
-        "EMA": 0.266424,
-        "COMBO": 0.15599,
-        "ULTRA": 0.15599,
-        "COMBO_HEDGE": 0.130865,
-        "ULTRA_HEDGE": 0.125638,
+        "Base": 0.299796,
+        "ST": 0.153798,
+        "EMA": 0.27047,
+        "COMBO": 0.158273,
+        "ULTRA": 0.158273,
+        "COMBO_HEDGE": 0.132764,
+        "ULTRA_HEDGE": 0.127457,
         "Bench": 0.0
       },
       "Volatility": {
-        "Base": 0.260736,
-        "ST": 0.2077,
-        "EMA": 0.24774,
-        "COMBO": 0.207003,
-        "ULTRA": 0.207003,
-        "COMBO_HEDGE": 0.186406,
-        "ULTRA_HEDGE": 0.187418,
-        "Bench": 0.0
+        "Base": 0.262058,
+        "ST": 0.208815,
+        "EMA": 0.249004,
+        "COMBO": 0.208109,
+        "ULTRA": 0.208109,
+        "COMBO_HEDGE": 0.187398,
+        "ULTRA_HEDGE": 0.188423,
+        "Bench": 0.18718
       },
       "Downside Dev": {
-        "Base": 0.240657,
-        "ST": 0.173451,
-        "EMA": 0.234157,
-        "COMBO": 0.171934,
-        "ULTRA": 0.171934,
-        "COMBO_HEDGE": 0.139974,
-        "ULTRA_HEDGE": 0.142224,
-        "Bench": 0.0
+        "Base": 0.16767,
+        "ST": 0.127235,
+        "EMA": 0.172043,
+        "COMBO": 0.126876,
+        "ULTRA": 0.126876,
+        "COMBO_HEDGE": 0.101685,
+        "ULTRA_HEDGE": 0.101286,
+        "Bench": 0.159598
       },
       "Sharpe": {
-        "Base": 1.377212,
-        "ST": 1.037074,
-        "EMA": 1.333021,
-        "COMBO": 1.06186,
-        "ULTRA": 1.06186,
-        "COMBO_HEDGE": 1.044404,
-        "ULTRA_HEDGE": 1.010872,
-        "Bench": 0.0
+        "Base": 1.393715,
+        "ST": 1.049904,
+        "EMA": 1.349011,
+        "COMBO": 1.074976,
+        "ULTRA": 1.074976,
+        "COMBO_HEDGE": 1.057653,
+        "ULTRA_HEDGE": 1.023736,
+        "Bench": 0.349602
       },
       "Sortino": {
-        "Base": 1.492116,
-        "ST": 1.241851,
-        "EMA": 1.410344,
-        "COMBO": 1.278443,
-        "ULTRA": 1.278443,
-        "COMBO_HEDGE": 1.390847,
-        "ULTRA_HEDGE": 1.332092,
-        "Bench": 0.0
+        "Base": 2.178291,
+        "ST": 1.723086,
+        "EMA": 1.952468,
+        "COMBO": 1.763237,
+        "ULTRA": 1.763237,
+        "COMBO_HEDGE": 1.949184,
+        "ULTRA_HEDGE": 1.904464,
+        "Bench": 0.410021
       },
       "Calmar": {
-        "Base": 1.784904,
-        "ST": 1.256925,
-        "EMA": 1.749647,
-        "COMBO": 1.287979,
-        "ULTRA": 1.287979,
-        "COMBO_HEDGE": 1.189552,
-        "ULTRA_HEDGE": 1.165137,
-        "Bench": 0.0
+        "Base": 1.811077,
+        "ST": 1.274433,
+        "EMA": 1.775052,
+        "COMBO": 1.305949,
+        "ULTRA": 1.305949,
+        "COMBO_HEDGE": 1.20599,
+        "ULTRA_HEDGE": 1.181205,
+        "Bench": 0.517374
       },
       "Max Drawdown": {
         "Base": -0.234796,
@@ -11346,37 +11346,37 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.217246,
         "COMBO_HEDGE": -0.2141,
         "ULTRA_HEDGE": -0.2141,
-        "Bench": 0.0
+        "Bench": -0.242452
       },
       "DD Duration (M)": {
-        "Base": 20.0,
-        "ST": 20.0,
-        "EMA": 20.0,
-        "COMBO": 20.0,
-        "ULTRA": 20.0,
-        "COMBO_HEDGE": 20.0,
-        "ULTRA_HEDGE": 20.0,
-        "Bench": 0.0
+        "Base": 2.0,
+        "ST": 2.0,
+        "EMA": 2.0,
+        "COMBO": 2.0,
+        "ULTRA": 2.0,
+        "COMBO_HEDGE": 2.0,
+        "ULTRA_HEDGE": 2.0,
+        "Bench": 1.0
       },
       "VaR 95%": {
-        "Base": -0.068949,
-        "ST": -0.066592,
-        "EMA": -0.068459,
-        "COMBO": -0.063242,
-        "ULTRA": -0.063242,
-        "COMBO_HEDGE": -0.039153,
-        "ULTRA_HEDGE": -0.039578,
-        "Bench": 0.0
+        "Base": -0.069434,
+        "ST": -0.067187,
+        "EMA": -0.068609,
+        "COMBO": -0.063667,
+        "ULTRA": -0.063667,
+        "COMBO_HEDGE": -0.039251,
+        "ULTRA_HEDGE": -0.039595,
+        "Bench": -0.063419
       },
       "VaR 99%": {
-        "Base": -0.165343,
-        "ST": -0.121106,
-        "EMA": -0.157465,
-        "COMBO": -0.121078,
-        "ULTRA": -0.121078,
-        "COMBO_HEDGE": -0.09832,
-        "ULTRA_HEDGE": -0.09832,
-        "Bench": 0.0
+        "Base": -0.165974,
+        "ST": -0.121326,
+        "EMA": -0.158184,
+        "COMBO": -0.121297,
+        "ULTRA": -0.121297,
+        "COMBO_HEDGE": -0.098799,
+        "ULTRA_HEDGE": -0.098799,
+        "Bench": -0.139614
       },
       "CVaR 95%": {
         "Base": -0.123913,
@@ -11386,7 +11386,7 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.095466,
         "COMBO_HEDGE": -0.073917,
         "ULTRA_HEDGE": -0.073986,
-        "Bench": 0.0
+        "Bench": -0.112544
       },
       "CVaR 99%": {
         "Base": -0.216413,
@@ -11396,27 +11396,27 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.138776,
         "COMBO_HEDGE": -0.137112,
         "ULTRA_HEDGE": -0.137112,
-        "Bench": 0.0
+        "Bench": -0.242452
       },
       "Info Ratio": {
-        "Base": 1.567167,
-        "ST": 0.938879,
-        "EMA": 1.54584,
-        "COMBO": 0.964952,
-        "ULTRA": 0.964952,
-        "COMBO_HEDGE": 0.613005,
-        "ULTRA_HEDGE": 0.583045,
+        "Base": 1.351127,
+        "ST": 0.815927,
+        "EMA": 1.334821,
+        "COMBO": 0.835928,
+        "ULTRA": 0.835928,
+        "COMBO_HEDGE": 0.518699,
+        "ULTRA_HEDGE": 0.494876,
         "Bench": 0.0
       },
       "Win Rate": {
-        "Base": 0.695122,
-        "ST": 0.670732,
-        "EMA": 0.707317,
-        "COMBO": 0.670732,
-        "ULTRA": 0.670732,
-        "COMBO_HEDGE": 0.658537,
-        "ULTRA_HEDGE": 0.658537,
-        "Bench": 0.0
+        "Base": 0.703704,
+        "ST": 0.679012,
+        "EMA": 0.716049,
+        "COMBO": 0.679012,
+        "ULTRA": 0.679012,
+        "COMBO_HEDGE": 0.666667,
+        "ULTRA_HEDGE": 0.666667,
+        "Bench": 0.617284
       },
       "Profit Factor": {
         "Base": 3.173715,
@@ -11426,17 +11426,17 @@ const DASHBOARD_DATA = {
         "ULTRA": 3.066422,
         "COMBO_HEDGE": 3.189318,
         "ULTRA_HEDGE": 3.077523,
-        "Bench": 0.0
+        "Bench": 1.801436
       },
       "Expectancy": {
-        "Base": 0.031703,
-        "ST": 0.02174,
-        "EMA": 0.029722,
-        "COMBO": 0.022028,
-        "ULTRA": 0.022028,
-        "COMBO_HEDGE": 0.020082,
-        "ULTRA_HEDGE": 0.01973,
-        "Bench": 0.0
+        "Base": 0.032722,
+        "ST": 0.022438,
+        "EMA": 0.030669,
+        "COMBO": 0.022723,
+        "ULTRA": 0.022723,
+        "COMBO_HEDGE": 0.02068,
+        "ULTRA_HEDGE": 0.020337,
+        "Bench": 0.011396
       },
       "Avg Gain": {
         "Base": 0.067891,
@@ -11446,7 +11446,7 @@ const DASHBOARD_DATA = {
         "ULTRA": 0.049659,
         "COMBO_HEDGE": 0.045188,
         "ULTRA_HEDGE": 0.045188,
-        "Bench": 0.0
+        "Bench": 0.041496
       },
       "Avg Loss": {
         "Base": -0.050805,
@@ -11456,27 +11456,27 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.034258,
         "COMBO_HEDGE": -0.028337,
         "ULTRA_HEDGE": -0.029367,
-        "Bench": 0.0
+        "Bench": -0.037154
       },
       "Rolling 1Y": {
-        "Base": 0.275297,
-        "ST": 0.044911,
-        "EMA": 0.23905,
-        "COMBO": 0.049584,
-        "ULTRA": 0.049584,
-        "COMBO_HEDGE": 0.063428,
-        "ULTRA_HEDGE": 0.063428,
-        "Bench": 0.0
+        "Base": 0.230951,
+        "ST": 0.039096,
+        "EMA": 0.216915,
+        "COMBO": 0.04497,
+        "ULTRA": 0.04497,
+        "COMBO_HEDGE": 0.058753,
+        "ULTRA_HEDGE": 0.058753,
+        "Bench": -0.076528
       },
       "Rolling 3Y": {
-        "Base": 1.416029,
-        "ST": 0.536017,
-        "EMA": 1.088984,
-        "COMBO": 0.567051,
-        "ULTRA": 0.567051,
-        "COMBO_HEDGE": 0.389231,
-        "ULTRA_HEDGE": 0.389231,
-        "Bench": 0.0
+        "Base": 1.713715,
+        "ST": 0.72165,
+        "EMA": 1.346581,
+        "COMBO": 0.756435,
+        "ULTRA": 0.756435,
+        "COMBO_HEDGE": 0.557125,
+        "ULTRA_HEDGE": 0.557125,
+        "Bench": 0.303242
       },
       "Best Month": {
         "Base": 0.318176,
@@ -11486,7 +11486,7 @@ const DASHBOARD_DATA = {
         "ULTRA": 0.308066,
         "COMBO_HEDGE": 0.308066,
         "ULTRA_HEDGE": 0.308066,
-        "Bench": 0.0
+        "Bench": 0.145232
       },
       "Worst Month": {
         "Base": -0.216413,
@@ -11496,7 +11496,7 @@ const DASHBOARD_DATA = {
         "ULTRA": -0.138776,
         "COMBO_HEDGE": -0.137112,
         "ULTRA_HEDGE": -0.137112,
-        "Bench": 0.0
+        "Bench": -0.242452
       },
       "Avg Ex-Ante Sharpe": {
         "Base": 4.850062,
@@ -18319,5 +18319,5 @@ const DASHBOARD_DATA = {
     "DHOOTTRANS": "Automobile and Auto Components",
     "ICICILIFE": "Financial Services"
   },
-  "last_update": "2026-11-24 18:09:33 IST"
+  "last_update": "2026-11-25 12:32:01 IST"
 };
