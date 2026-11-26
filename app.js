@@ -9,10 +9,11 @@ const LAYERS = {
   BenchN50: { label: 'Nifty 50',  color: '#f59e0b', cls: 'ltag-bench' },
   // NSE Multi Asset indices, injected from ma_bench.js (update_ma_bench.py).
   BenchMA1: { label: 'NSE Multi Asset 50:40:10',    color: '#a78bfa', cls: 'ltag-bench' },
-  BenchMA2: { label: 'NSE Multi Asset 50:20:20:10', color: '#f472b6', cls: 'ltag-bench' }
+  BenchMA2: { label: 'NSE Multi Asset 50:20:20:10', color: '#f472b6', cls: 'ltag-bench' },
+  BenchBSE: { label: 'BSE 500',                     color: '#34d399', cls: 'ltag-bench' }
 };
-const BENCH_KEYS = ['Bench', 'BenchN50', 'BenchMA1', 'BenchMA2'];
-const MA_KEYS = { BenchMA1: 'MA1', BenchMA2: 'MA2' };
+const BENCH_KEYS = ['Bench', 'BenchN50', 'BenchMA1', 'BenchMA2', 'BenchBSE'];
+const MA_KEYS = { BenchMA1: 'MA1', BenchMA2: 'MA2', BenchBSE: 'BSE500' };
 const isBenchKey = (l) => BENCH_KEYS.includes(l);
 
 let state = {
@@ -238,6 +239,7 @@ function injectMultiAssetBenchmarks() {
     if (!t || t.__maBench || !Array.isArray(t.monthly_detail)) return;
     t.__maBench = true;
     Object.entries(MA_KEYS).forEach(([layer, key]) => {
+      if (!MA_BENCH[key]) return;
       const rets = MA_BENCH[key].rets;
       const done = [];
       t.monthly_detail.forEach(r => {
@@ -499,7 +501,7 @@ function openHeatModal(monthStr) {
   const fmtPct = (x) => x !== null ? (x >= 0 ? '+' : '') + x + '%' : 'N/A';
   const n50Val  = benchOf('nifty50');
   const n500Val = benchOf('nifty500');
-  const maOf = (k) => { const v = typeof MA_BENCH !== 'undefined' ? MA_BENCH[k].rets[monthStr] : null;
+  const maOf = (k) => { const v = typeof MA_BENCH !== 'undefined' ? MA_BENCH[k]?.rets[monthStr] : null;
                         return v != null ? +(v * 100).toFixed(2) : null; };
 
   const bodyEl = document.getElementById('modal-body');
@@ -649,6 +651,10 @@ function openHeatModal(monthStr) {
       <div>
         <div class="modal-metric">Nifty 500</div>
         <div class="modal-val" style="color:#94a3b8">${fmtPct(n500Val)}</div>
+      </div>
+      <div>
+        <div class="modal-metric">BSE 500</div>
+        <div class="modal-val" style="color:#34d399">${fmtPct(maOf('BSE500'))}</div>
       </div>
       <div>
         <div class="modal-metric">NSE Multi Asset 50:40:10</div>
